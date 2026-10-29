@@ -347,6 +347,12 @@ async function syncDumpToTiDB() {
 
   await pool.query('SET FOREIGN_KEY_CHECKS = 0');
 
+  // Hakikisha safu zote (columns) zipo
+  try { await pool.query('ALTER TABLE products ADD COLUMN variants_json TEXT'); } catch (e) {}
+  try { await pool.query("ALTER TABLE sales ADD COLUMN cashier_name VARCHAR(100) DEFAULT 'CASHIER'"); } catch (e) {}
+  try { await pool.query('ALTER TABLE sales ADD COLUMN user_id INT'); } catch (e) {}
+  try { await pool.query("ALTER TABLE installments ADD COLUMN cashier_name VARCHAR(100) DEFAULT 'CASHIER'"); } catch (e) {}
+
   try {
     // 1. Users
     if (Array.isArray(dump.users)) {
