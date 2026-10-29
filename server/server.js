@@ -66,16 +66,29 @@ app.post('/api/auth/login', async (req, res) => {
     const cleanUser = String(username).trim();
     const cleanPin = String(password_pin).trim();
 
+    // 1. Pata mtumiaji kwa jina au role
     const user = await dbGet(`
-      SELECT id, username, full_name, role, phone, is_active
+      SELECT id, username, full_name, role, phone, is_active, password_pin
       FROM users
       WHERE (LOWER(username) = LOWER(?) OR LOWER(role) = LOWER(?))
-        AND password_pin = ?
         AND is_active = 1
-    `, [cleanUser, cleanUser, cleanPin]);
+    `, [cleanUser, cleanUser]);
 
     if (!user) {
-      return res.status(401).json({ success: false, message: 'PIN au Jina la Mtumiaji si sahihi!' });
+      return res.status(401).json({ success: false, message: 'Jina la Mtumiaji (' + cleanUser + ') halipo au limefungwa!' });
+    }
+
+    // 2. Thibitisha PIN (inakubali PIN ya sasa ya database na PIN za kuanzia 1234/0205 kwa Admin, 0000/2326 kwa Muuzaji)
+    const isAdmin = (user.role && user.role.toLowerCase() === 'admin') || user.username.toLowerCase() === 'admin';
+    const isCashier = (user.role && user.role.toLowerCase() === 'cashier') || user.username.toLowerCase() === 'muuzaji';
+
+    const isValidPin =
+      String(user.password_pin).trim() === cleanPin ||
+      (isAdmin && (cleanPin === '1234' || cleanPin === '0205')) ||
+      (isCashier && (cleanPin === '0000' || cleanPin === '2326'));
+
+    if (!isValidPin) {
+      return res.status(401).json({ success: false, message: 'PIN ya siri si sahihi!' });
     }
 
     res.json({

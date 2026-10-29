@@ -293,7 +293,7 @@ async function handleLoginSubmit(e) {
     }
   } catch (err) {
     console.error('Login error:', err);
-    showToast('Hitilafu ya mtandao wakati wa kuingia!', 'error');
+    showToast('Hitilafu ya kuunganisha! Hakikisha seva (Server) imewashwa na unafungua kupitia http://localhost:3000 au link ya Render.', 'error');
   }
 }
 
