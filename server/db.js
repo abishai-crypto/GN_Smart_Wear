@@ -61,7 +61,7 @@ function adaptQuery(query) {
 const dbRun = async (query, params = []) => {
   const adapted = adaptQuery(query);
   if (isTiDB) {
-    const [result] = await pool.execute(adapted, params);
+    const [result] = await pool.query(adapted, params);
     return { id: result.insertId, changes: result.affectedRows };
   }
   return new Promise((resolve, reject) => {
@@ -75,7 +75,7 @@ const dbRun = async (query, params = []) => {
 const dbAll = async (query, params = []) => {
   const adapted = adaptQuery(query);
   if (isTiDB) {
-    const [rows] = await pool.execute(adapted, params);
+    const [rows] = await pool.query(adapted, params);
     return rows;
   }
   return new Promise((resolve, reject) => {
@@ -89,7 +89,7 @@ const dbAll = async (query, params = []) => {
 const dbGet = async (query, params = []) => {
   const adapted = adaptQuery(query);
   if (isTiDB) {
-    const [rows] = await pool.execute(adapted, params);
+    const [rows] = await pool.query(adapted, params);
     return rows[0] || null;
   }
   return new Promise((resolve, reject) => {
@@ -101,8 +101,235 @@ const dbGet = async (query, params = []) => {
 };
 
 
+// Initialize schema for TiDB Cloud Serverless
+async function initTiDBDatabase() {
+  console.log('TiDB: Kuangalia na kuunda majedwali ya database...');
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS products (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      code VARCHAR(100) UNIQUE NOT NULL,
+      name VARCHAR(255) NOT NULL,
+      category VARCHAR(100) NOT NULL,
+      gender_age VARCHAR(50) NOT NULL,
+      size VARCHAR(100),
+      color VARCHAR(100),
+      buy_price DECIMAL(12, 2) NOT NULL,
+      sell_price DECIMAL(12, 2) NOT NULL,
+      stock_quantity INT NOT NULL DEFAULT 0,
+      min_stock_alert INT DEFAULT 3,
+      image_url TEXT,
+      variants_json TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS purchases (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      product_id INT NOT NULL,
+      supplier_name VARCHAR(255),
+      quantity INT NOT NULL,
+      unit_cost DECIMAL(12, 2) NOT NULL,
+      total_cost DECIMAL(12, 2) NOT NULL,
+      purchase_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+      notes TEXT,
+      FOREIGN KEY(product_id) REFERENCES products(id) ON DELETE CASCADE
+    )
+  `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS sales (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      receipt_no VARCHAR(100) UNIQUE NOT NULL,
+      customer_name VARCHAR(255) DEFAULT 'Mteja wa Kawaida',
+      customer_phone VARCHAR(50),
+      total_amount DECIMAL(12, 2) NOT NULL,
+      discount DECIMAL(12, 2) DEFAULT 0,
+      net_amount DECIMAL(12, 2) NOT NULL,
+      payment_type VARCHAR(50) NOT NULL,
+      payment_provider VARCHAR(50),
+      reference_code VARCHAR(100),
+      amount_paid DECIMAL(12, 2) NOT NULL DEFAULT 0,
+      balance_due DECIMAL(12, 2) NOT NULL DEFAULT 0,
+      status VARCHAR(50) NOT NULL DEFAULT 'completed',
+      due_date DATE,
+      notes TEXT,
+      cashier_name VARCHAR(100) DEFAULT 'CASHIER',
+      user_id INT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS sale_items (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      sale_id INT NOT NULL,
+      product_id INT NOT NULL,
+      product_name VARCHAR(255) NOT NULL,
+      quantity INT NOT NULL,
+      unit_price DECIMAL(12, 2) NOT NULL,
+      unit_cost DECIMAL(12, 2) NOT NULL DEFAULT 0,
+      subtotal DECIMAL(12, 2) NOT NULL,
+      profit DECIMAL(12, 2) NOT NULL DEFAULT 0,
+      FOREIGN KEY(sale_id) REFERENCES sales(id) ON DELETE CASCADE,
+      FOREIGN KEY(product_id) REFERENCES products(id)
+    )
+  `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS installments (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      sale_id INT NOT NULL,
+      amount DECIMAL(12, 2) NOT NULL,
+      payment_type VARCHAR(50) NOT NULL,
+      reference_code VARCHAR(100),
+      cashier_name VARCHAR(100) DEFAULT 'CASHIER',
+      paid_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      notes TEXT,
+      FOREIGN KEY(sale_id) REFERENCES sales(id) ON DELETE CASCADE
+    )
+  `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS store_settings (
+      \`key\` VARCHAR(100) PRIMARY KEY,
+      \`value\` TEXT
+    )
+  `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS expenses (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      title VARCHAR(255) NOT NULL,
+      category VARCHAR(100) NOT NULL,
+      amount DECIMAL(12, 2) NOT NULL,
+      payment_type VARCHAR(50) DEFAULT 'Cash',
+      expense_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+      notes TEXT
+    )
+  `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS orders (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      order_no VARCHAR(100) UNIQUE NOT NULL,
+      customer_name VARCHAR(255) NOT NULL,
+      customer_phone VARCHAR(50) NOT NULL,
+      clothing_item VARCHAR(255) NOT NULL,
+      category VARCHAR(100) DEFAULT 'Nyinginezo',
+      size VARCHAR(100),
+      color VARCHAR(100),
+      quantity INT NOT NULL DEFAULT 1,
+      target_date DATE NOT NULL,
+      estimated_price DECIMAL(12, 2) NOT NULL DEFAULT 0,
+      advance_paid DECIMAL(12, 2) NOT NULL DEFAULT 0,
+      balance_due DECIMAL(12, 2) NOT NULL DEFAULT 0,
+      payment_method VARCHAR(50) DEFAULT 'Cash',
+      status VARCHAR(50) NOT NULL DEFAULT 'pending',
+      image_url TEXT,
+      notes TEXT,
+      created_by VARCHAR(100) DEFAULT 'CASHIER',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS order_payments (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      order_id INT NOT NULL,
+      amount DECIMAL(12, 2) NOT NULL,
+      payment_type VARCHAR(50) NOT NULL,
+      reference_code VARCHAR(100),
+      notes TEXT,
+      cashier_name VARCHAR(100) DEFAULT 'CASHIER',
+      paid_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY(order_id) REFERENCES orders(id) ON DELETE CASCADE
+    )
+  `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS users (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      username VARCHAR(100) UNIQUE NOT NULL,
+      password_pin VARCHAR(50) NOT NULL,
+      full_name VARCHAR(255) NOT NULL,
+      role VARCHAR(50) NOT NULL DEFAULT 'cashier',
+      phone VARCHAR(50),
+      is_active INT DEFAULT 1,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  // Seed Admin & Cashier if not exist
+  const [existingUsers] = await pool.query(`SELECT COUNT(*) as count FROM users`);
+  if (!existingUsers[0] || existingUsers[0].count === 0) {
+    await pool.query(`
+      INSERT INTO users (username, password_pin, full_name, role, phone)
+      VALUES 
+        ('admin', '1234', 'ABISHAI EVARISTO NGENZI (Mmiliki)', 'admin', '0656392400'),
+        ('muuzaji', '0000', 'CASHIER', 'cashier', '0685073565')
+      ON DUPLICATE KEY UPDATE full_name = VALUES(full_name)
+    `);
+    console.log('TiDB: Akaunti za awali za Admin (PIN: 1234) na Muuzaji (PIN: 0000) zimeundwa vizuri!');
+  }
+
+  // Seed default settings
+  const defaultSettings = [
+    ['store_name', 'GLOWNEST Smart Wear'],
+    ['owner_name', 'ABISHAI EVARISTO NGENZI'],
+    ['store_tagline', 'Mitindo na Nguo Bora za Kisasa Kutoka Kariakoo'],
+    ['store_phone', '0656392400 / 0685073565'],
+    ['store_phone_primary', '0656392400'],
+    ['store_phone_secondary', '0685073565'],
+    ['tigo_lipa_number', '44834912'],
+    ['tigo_lipa_name', 'ABISHAI'],
+    ['airtel_lipa_number', '136541343'],
+    ['airtel_lipa_name', 'DORCAS'],
+    ['store_location', 'GOLANI KIJIWENI - KIMARA SUKA DSM-TZ'],
+    ['store_logo', '/assets/logo.png'],
+    ['currency', 'TZS']
+  ];
+
+  for (const [k, v] of defaultSettings) {
+    await pool.query(`
+      INSERT INTO store_settings (\`key\`, \`value\`) VALUES (?, ?)
+      ON DUPLICATE KEY UPDATE \`value\` = VALUES(\`value\`)
+    `, [k, v]);
+  }
+
+  // Seed sample Kariakoo products if empty
+  const [existingProducts] = await pool.query(`SELECT COUNT(*) as count FROM products`);
+  if (!existingProducts[0] || existingProducts[0].count === 0) {
+    const sampleProducts = [
+      ['GN-JNS-01', 'Jeans Kali ya Kiume (Slim-Fit Stretch)', 'Jeans', 'Wanaume', '30, 32, 34, 36', 'Blue Fade / Black', 22000, 35000, 24, 'https://images.unsplash.com/photo-1542272604-780c96856592?w=600&auto=format&fit=crop&q=80'],
+      ['GN-MJJ-02', 'Majeje Jeans (High-Waist Bootcut ya Kike)', 'Jeans', 'Wanawake', '28, 30, 32, 34', 'Light Blue / Navy', 25000, 40000, 18, 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=600&auto=format&fit=crop&q=80'],
+      ['GN-SHT-03', 'Shati la Pamba (Formal / Casual Slim Fit)', 'Mashati', 'Wanaume', 'M, L, XL, XXL', 'White, Navy, Maroon', 18000, 30000, 30, 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&auto=format&fit=crop&q=80'],
+      ['GN-GAU-04', 'Gauni la Kifahari la Harusi na Sherehe', 'Magauni', 'Wanawake', 'Free Size, L, XL', 'Emerald Green / Gold', 35000, 65000, 12, 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&auto=format&fit=crop&q=80'],
+      ['GN-TRK-05', 'Tracksuit Full Set (Jacket + Suruali Safi)', 'Tracksuits', 'Unisex', 'M, L, XL, XXL', 'Black/White, Grey, Navy', 28000, 48000, 20, 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&auto=format&fit=crop&q=80'],
+      ['GN-TSH-06', 'T-Shirt Kali ya Pamba (Heavyweight Cotton)', 'T-Shirts', 'Unisex', 'S, M, L, XL', 'Oversize Black, White, Brown', 12000, 20000, 45, 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600&auto=format&fit=crop&q=80'],
+      ['GN-SRL-07', 'Suruali ya Kitambaa ya Ofisini & Mitoko', 'Suruali', 'Wanaume', '30, 32, 34, 36, 38', 'Grey, Black, Khaki', 20000, 35000, 15, 'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=600&auto=format&fit=crop&q=80'],
+      ['GN-KID-08', 'Seti ya Nguo za Watoto (Kaptula + T-Shirt)', 'Watoto', 'Watoto', 'Miaka 2-5, 6-10', 'Multicolor', 15000, 25000, 22, 'https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=600&auto=format&fit=crop&q=80']
+    ];
+
+    for (const p of sampleProducts) {
+      await pool.query(`
+        INSERT INTO products (code, name, category, gender_age, size, color, buy_price, sell_price, stock_quantity, min_stock_alert, image_url)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 3, ?)
+      `, p);
+    }
+    console.log('TiDB: Bidhaa za sampuli za Kariakoo zimeingizwa vizuri!');
+  }
+
+  console.log('TiDB Cloud: Majedwali na data zote za awali zimekamilika kwa mafanikio!');
+}
+
 // Initialize schema and default data
 async function initDatabase() {
+  if (isTiDB) {
+    return await initTiDBDatabase();
+  }
+
   await dbRun(`
     CREATE TABLE IF NOT EXISTS products (
       id INTEGER PRIMARY KEY AUTOINCREMENT,

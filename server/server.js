@@ -55,6 +55,20 @@ initDatabase().catch(err => console.error('Database init error:', err));
 // 0. AUTHENTICATION & USERS (SESSION ZA WAUZAJI NA ADMIN)
 // ==========================================
 
+// Health & Setup endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', time: new Date().toISOString() });
+});
+
+app.get('/api/setup-db', async (req, res) => {
+  try {
+    await initDatabase();
+    res.json({ success: true, message: 'Database na majedwali yote ya TiDB/SQLite yameandaliwa kikamilifu!' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 // Login endpoint
 app.post('/api/auth/login', async (req, res) => {
   try {
@@ -66,13 +80,29 @@ app.post('/api/auth/login', async (req, res) => {
     const cleanUser = String(username).trim();
     const cleanPin = String(password_pin).trim();
 
-    // 1. Pata mtumiaji kwa jina au role
-    const user = await dbGet(`
-      SELECT id, username, full_name, role, phone, is_active, password_pin
-      FROM users
-      WHERE (LOWER(username) = LOWER(?) OR LOWER(role) = LOWER(?))
-        AND is_active = 1
-    `, [cleanUser, cleanUser]);
+    // 1. Pata mtumiaji kwa jina au role (kukiwa na hitilafu ya table, jiandae kiotomatiki)
+    let user;
+    try {
+      user = await dbGet(`
+        SELECT id, username, full_name, role, phone, is_active, password_pin
+        FROM users
+        WHERE (LOWER(username) = LOWER(?) OR LOWER(role) = LOWER(?))
+          AND is_active = 1
+      `, [cleanUser, cleanUser]);
+    } catch (queryErr) {
+      if (queryErr.message && (queryErr.message.includes("doesn't exist") || queryErr.message.includes("no such table"))) {
+        console.log('Kutengeneza majedwali kwa mara ya kwanza...');
+        await initDatabase();
+        user = await dbGet(`
+          SELECT id, username, full_name, role, phone, is_active, password_pin
+          FROM users
+          WHERE (LOWER(username) = LOWER(?) OR LOWER(role) = LOWER(?))
+            AND is_active = 1
+        `, [cleanUser, cleanUser]);
+      } else {
+        throw queryErr;
+      }
+    }
 
     if (!user) {
       return res.status(401).json({ success: false, message: 'Jina la Mtumiaji (' + cleanUser + ') halipo au limefungwa!' });
