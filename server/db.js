@@ -1,43 +1,105 @@
 const sqlite3 = require('sqlite3').verbose();
+const mysql = require('mysql2/promise');
 const path = require('path');
 const fs = require('fs');
 
-const dbPath = path.join(__dirname, 'glownest.db');
-const db = new sqlite3.Database(dbPath, (err) => {
-  if (err) {
-    console.error('Hitilafu ya kufungua Database:', err.message);
-  } else {
-    console.log('Database ya GLOWNEST Smart Wear imeunganishwa vizuri.');
-  }
-});
+const isTiDB = !!process.env.TIDB_HOST;
 
-// Helper kwa kutumia Promises na SQLite
-const dbRun = (query, params = []) => {
+let pool = null;
+let db = null;
+
+if (isTiDB) {
+  pool = mysql.createPool({
+    host: process.env.TIDB_HOST,
+    port: parseInt(process.env.TIDB_PORT || '4000', 10),
+    user: process.env.TIDB_USER,
+    password: process.env.TIDB_PASSWORD,
+    database: process.env.TIDB_DATABASE || 'test',
+    ssl: {
+      minVersion: 'TLSv1.2',
+      rejectUnauthorized: true
+    },
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+  });
+  console.log(`TiDB Cloud imeunganishwa vizuri (Host: ${process.env.TIDB_HOST}). Hifadhi ya kudumu inafanya kazi.`);
+} else {
+  const dbPath = path.join(__dirname, 'glownest.db');
+  db = new sqlite3.Database(dbPath, (err) => {
+    if (err) {
+      console.error('Hitilafu ya kufungua Database:', err.message);
+    } else {
+      console.log('Database ya ndani (SQLite) ya GLOWNEST Smart Wear imeunganishwa vizuri.');
+    }
+  });
+}
+
+function adaptQuery(query) {
+  if (!isTiDB) return query;
+  let q = query;
+  q = q.replace(/INTEGER PRIMARY KEY AUTOINCREMENT/gi, 'INT AUTO_INCREMENT PRIMARY KEY');
+  q = q.replace(/code TEXT UNIQUE NOT NULL/gi, 'code VARCHAR(100) UNIQUE NOT NULL');
+  q = q.replace(/receipt_no TEXT UNIQUE NOT NULL/gi, 'receipt_no VARCHAR(100) UNIQUE NOT NULL');
+  q = q.replace(/order_no TEXT UNIQUE NOT NULL/gi, 'order_no VARCHAR(100) UNIQUE NOT NULL');
+  q = q.replace(/username TEXT UNIQUE NOT NULL/gi, 'username VARCHAR(100) UNIQUE NOT NULL');
+  q = q.replace(/key TEXT PRIMARY KEY/gi, '`key` VARCHAR(100) PRIMARY KEY');
+  q = q.replace(/store_settings\s*\(\s*key\s*,\s*value\s*\)/gi, 'store_settings (`key`, `value`)');
+  q = q.replace(/ON CONFLICT\s*\(\s*key\s*\)\s*DO UPDATE SET value\s*=\s*excluded\.value/gi, 'ON DUPLICATE KEY UPDATE `value` = VALUES(`value`)');
+  q = q.replace(/date\('now',\s*'localtime'\)/gi, 'CURDATE()');
+  q = q.replace(/date\('now',\s*'-12 months'\)/gi, 'DATE_SUB(CURDATE(), INTERVAL 12 MONTH)');
+  q = q.replace(/date\('now',\s*'-30 days'\)/gi, 'DATE_SUB(CURDATE(), INTERVAL 30 DAY)');
+  q = q.replace(/date\('now',\s*'-7 days'\)/gi, 'DATE_SUB(CURDATE(), INTERVAL 7 DAY)');
+  q = q.replace(/strftime\('%Y-%m-%d',\s*([^)]+)\)/gi, 'DATE_FORMAT($1, "%Y-%m-%d")');
+  q = q.replace(/strftime\('%Y-%m',\s*([^)]+)\)/gi, 'DATE_FORMAT($1, "%Y-%m")');
+  q = q.replace(/strftime\('%Y',\s*([^)]+)\)/gi, 'DATE_FORMAT($1, "%Y")');
+  q = q.replace(/strftime\('%d\/%m',\s*([^)]+)\)/gi, 'DATE_FORMAT($1, "%d/%m")');
+  return q;
+}
+
+// Helper kwa kutumia Promises na SQLite / TiDB
+const dbRun = async (query, params = []) => {
+  const adapted = adaptQuery(query);
+  if (isTiDB) {
+    const [result] = await pool.execute(adapted, params);
+    return { id: result.insertId, changes: result.affectedRows };
+  }
   return new Promise((resolve, reject) => {
-    db.run(query, params, function (err) {
+    db.run(adapted, params, function (err) {
       if (err) reject(err);
       else resolve({ id: this.lastID, changes: this.changes });
     });
   });
 };
 
-const dbAll = (query, params = []) => {
+const dbAll = async (query, params = []) => {
+  const adapted = adaptQuery(query);
+  if (isTiDB) {
+    const [rows] = await pool.execute(adapted, params);
+    return rows;
+  }
   return new Promise((resolve, reject) => {
-    db.all(query, params, (err, rows) => {
+    db.all(adapted, params, (err, rows) => {
       if (err) reject(err);
       else resolve(rows);
     });
   });
 };
 
-const dbGet = (query, params = []) => {
+const dbGet = async (query, params = []) => {
+  const adapted = adaptQuery(query);
+  if (isTiDB) {
+    const [rows] = await pool.execute(adapted, params);
+    return rows[0] || null;
+  }
   return new Promise((resolve, reject) => {
-    db.get(query, params, (err, row) => {
+    db.get(adapted, params, (err, row) => {
       if (err) reject(err);
       else resolve(row);
     });
   });
 };
+
 
 // Initialize schema and default data
 async function initDatabase() {
