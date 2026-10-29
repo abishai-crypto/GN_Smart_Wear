@@ -321,7 +321,204 @@ async function initTiDBDatabase() {
     console.log('TiDB: Bidhaa za sampuli za Kariakoo zimeingizwa vizuri!');
   }
 
+  // Automatic sync from SQLite dump to TiDB
+  try {
+    await syncDumpToTiDB();
+  } catch (err) {
+    console.error('Hitilafu ya kusawazisha data dump kwenda TiDB:', err);
+  }
+
   console.log('TiDB Cloud: Majedwali na data zote za awali zimekamilika kwa mafanikio!');
+}
+
+async function syncDumpToTiDB() {
+  if (!isTiDB || !pool) {
+    return { success: false, message: 'Not connected to TiDB Cloud' };
+  }
+
+  const dumpPath = path.join(__dirname, 'initial_data_dump.json');
+  if (!fs.existsSync(dumpPath)) {
+    console.log('Hakuna faili la initial_data_dump.json la kusawazisha.');
+    return { success: false, message: 'Dump file not found' };
+  }
+
+  const dump = JSON.parse(fs.readFileSync(dumpPath, 'utf8'));
+  console.log('TiDB: Inasawazisha taarifa zote kutoka SQLite dump...');
+
+  await pool.query('SET FOREIGN_KEY_CHECKS = 0');
+
+  try {
+    // 1. Users
+    if (Array.isArray(dump.users)) {
+      for (const u of dump.users) {
+        await pool.query(`
+          INSERT INTO users (id, username, password_pin, full_name, role, phone, is_active, created_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+          ON DUPLICATE KEY UPDATE
+            password_pin = VALUES(password_pin), full_name = VALUES(full_name),
+            role = VALUES(role), phone = VALUES(phone), is_active = VALUES(is_active)
+        `, [u.id, u.username, u.password_pin, u.full_name, u.role, u.phone, u.is_active, u.created_at]);
+      }
+    }
+
+    // 2. Products
+    if (Array.isArray(dump.products)) {
+      for (const p of dump.products) {
+        await pool.query(`
+          INSERT INTO products (id, code, name, category, gender_age, size, color, buy_price, sell_price, stock_quantity, min_stock_alert, image_url, variants_json, created_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          ON DUPLICATE KEY UPDATE
+            code = VALUES(code), name = VALUES(name), category = VALUES(category),
+            gender_age = VALUES(gender_age), size = VALUES(size), color = VALUES(color),
+            buy_price = VALUES(buy_price), sell_price = VALUES(sell_price),
+            stock_quantity = VALUES(stock_quantity), min_stock_alert = VALUES(min_stock_alert),
+            image_url = VALUES(image_url), variants_json = VALUES(variants_json)
+        `, [p.id, p.code, p.name, p.category, p.gender_age, p.size, p.color, p.buy_price, p.sell_price, p.stock_quantity, p.min_stock_alert, p.image_url, p.variants_json, p.created_at]);
+      }
+    }
+
+    // 3. Purchases
+    if (Array.isArray(dump.purchases)) {
+      for (const pu of dump.purchases) {
+        await pool.query(`
+          INSERT INTO purchases (id, product_id, supplier_name, quantity, unit_cost, total_cost, purchase_date, notes)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+          ON DUPLICATE KEY UPDATE
+            product_id = VALUES(product_id), supplier_name = VALUES(supplier_name),
+            quantity = VALUES(quantity), unit_cost = VALUES(unit_cost),
+            total_cost = VALUES(total_cost), purchase_date = VALUES(purchase_date),
+            notes = VALUES(notes)
+        `, [pu.id, pu.product_id, pu.supplier_name, pu.quantity, pu.unit_cost, pu.total_cost, pu.purchase_date, pu.notes]);
+      }
+    }
+
+    // 4. Sales
+    if (Array.isArray(dump.sales)) {
+      for (const s of dump.sales) {
+        await pool.query(`
+          INSERT INTO sales (id, receipt_no, customer_name, customer_phone, total_amount, discount, net_amount, payment_type, payment_provider, reference_code, amount_paid, balance_due, status, due_date, notes, cashier_name, user_id, created_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          ON DUPLICATE KEY UPDATE
+            receipt_no = VALUES(receipt_no), customer_name = VALUES(customer_name),
+            customer_phone = VALUES(customer_phone), total_amount = VALUES(total_amount),
+            discount = VALUES(discount), net_amount = VALUES(net_amount),
+            payment_type = VALUES(payment_type), payment_provider = VALUES(payment_provider),
+            reference_code = VALUES(reference_code), amount_paid = VALUES(amount_paid),
+            balance_due = VALUES(balance_due), status = VALUES(status),
+            due_date = VALUES(due_date), notes = VALUES(notes),
+            cashier_name = VALUES(cashier_name), user_id = VALUES(user_id)
+        `, [s.id, s.receipt_no, s.customer_name, s.customer_phone, s.total_amount, s.discount, s.net_amount, s.payment_type, s.payment_provider, s.reference_code, s.amount_paid, s.balance_due, s.status, s.due_date, s.notes, s.cashier_name, s.user_id, s.created_at]);
+      }
+    }
+
+    // 5. Sale Items
+    if (Array.isArray(dump.sale_items)) {
+      for (const si of dump.sale_items) {
+        await pool.query(`
+          INSERT INTO sale_items (id, sale_id, product_id, product_name, quantity, unit_price, unit_cost, subtotal, profit)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+          ON DUPLICATE KEY UPDATE
+            sale_id = VALUES(sale_id), product_id = VALUES(product_id),
+            product_name = VALUES(product_name), quantity = VALUES(quantity),
+            unit_price = VALUES(unit_price), unit_cost = VALUES(unit_cost),
+            subtotal = VALUES(subtotal), profit = VALUES(profit)
+        `, [si.id, si.sale_id, si.product_id, si.product_name, si.quantity, si.unit_price, si.unit_cost, si.subtotal, si.profit]);
+      }
+    }
+
+    // 6. Installments
+    if (Array.isArray(dump.installments)) {
+      for (const inst of dump.installments) {
+        await pool.query(`
+          INSERT INTO installments (id, sale_id, amount, payment_type, reference_code, cashier_name, paid_at, notes)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+          ON DUPLICATE KEY UPDATE
+            sale_id = VALUES(sale_id), amount = VALUES(amount),
+            payment_type = VALUES(payment_type), reference_code = VALUES(reference_code),
+            cashier_name = VALUES(cashier_name), paid_at = VALUES(paid_at),
+            notes = VALUES(notes)
+        `, [inst.id, inst.sale_id, inst.amount, inst.payment_type, inst.reference_code, inst.cashier_name, inst.paid_at, inst.notes]);
+      }
+    }
+
+    // 7. Store Settings
+    if (Array.isArray(dump.store_settings)) {
+      for (const st of dump.store_settings) {
+        await pool.query(`
+          INSERT INTO store_settings (\`key\`, \`value\`)
+          VALUES (?, ?)
+          ON DUPLICATE KEY UPDATE \`value\` = VALUES(\`value\`)
+        `, [st.key, st.value]);
+      }
+    }
+
+    // 8. Expenses
+    if (Array.isArray(dump.expenses)) {
+      for (const ex of dump.expenses) {
+        await pool.query(`
+          INSERT INTO expenses (id, title, category, amount, payment_type, expense_date, notes)
+          VALUES (?, ?, ?, ?, ?, ?, ?)
+          ON DUPLICATE KEY UPDATE
+            title = VALUES(title), category = VALUES(category),
+            amount = VALUES(amount), payment_type = VALUES(payment_type),
+            expense_date = VALUES(expense_date), notes = VALUES(notes)
+        `, [ex.id, ex.title, ex.category, ex.amount, ex.payment_type, ex.expense_date, ex.notes]);
+      }
+    }
+
+    // 9. Orders
+    if (Array.isArray(dump.orders)) {
+      for (const o of dump.orders) {
+        await pool.query(`
+          INSERT INTO orders (id, order_no, customer_name, customer_phone, clothing_item, category, size, color, quantity, target_date, estimated_price, advance_paid, balance_due, payment_method, status, image_url, notes, created_by, created_at, updated_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          ON DUPLICATE KEY UPDATE
+            order_no = VALUES(order_no), customer_name = VALUES(customer_name),
+            customer_phone = VALUES(customer_phone), clothing_item = VALUES(clothing_item),
+            category = VALUES(category), size = VALUES(size), color = VALUES(color),
+            quantity = VALUES(quantity), target_date = VALUES(target_date),
+            estimated_price = VALUES(estimated_price), advance_paid = VALUES(advance_paid),
+            balance_due = VALUES(balance_due), payment_method = VALUES(payment_method),
+            status = VALUES(status), image_url = VALUES(image_url), notes = VALUES(notes),
+            created_by = VALUES(created_by), updated_at = VALUES(updated_at)
+        `, [o.id, o.order_no, o.customer_name, o.customer_phone, o.clothing_item, o.category, o.size, o.color, o.quantity, o.target_date, o.estimated_price, o.advance_paid, o.balance_due, o.payment_method, o.status, o.image_url, o.notes, o.created_by, o.created_at, o.updated_at]);
+      }
+    }
+
+    // 10. Order Payments
+    if (Array.isArray(dump.order_payments)) {
+      for (const op of dump.order_payments) {
+        await pool.query(`
+          INSERT INTO order_payments (id, order_id, amount, payment_type, reference_code, notes, cashier_name, paid_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+          ON DUPLICATE KEY UPDATE
+            order_id = VALUES(order_id), amount = VALUES(amount),
+            payment_type = VALUES(payment_type), reference_code = VALUES(reference_code),
+            notes = VALUES(notes), cashier_name = VALUES(cashier_name),
+            paid_at = VALUES(paid_at)
+        `, [op.id, op.order_id, op.amount, op.payment_type, op.reference_code, op.notes, op.cashier_name, op.paid_at]);
+      }
+    }
+
+    console.log('TiDB: Usawazishaji wa taarifa zote kutoka dump umekamilika kikamilifu!');
+    return {
+      success: true,
+      message: 'All tables synced to TiDB Cloud successfully',
+      stats: {
+        products: dump.products?.length || 0,
+        purchases: dump.purchases?.length || 0,
+        sales: dump.sales?.length || 0,
+        sale_items: dump.sale_items?.length || 0,
+        installments: dump.installments?.length || 0,
+        expenses: dump.expenses?.length || 0,
+        orders: dump.orders?.length || 0,
+        order_payments: dump.order_payments?.length || 0,
+        settings: dump.store_settings?.length || 0
+      }
+    };
+  } finally {
+    await pool.query('SET FOREIGN_KEY_CHECKS = 1');
+  }
 }
 
 // Initialize schema and default data
@@ -745,5 +942,6 @@ module.exports = {
   dbRun,
   dbAll,
   dbGet,
-  initDatabase
+  initDatabase,
+  syncDumpToTiDB
 };

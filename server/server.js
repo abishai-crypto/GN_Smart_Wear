@@ -69,6 +69,16 @@ app.get('/api/setup-db', async (req, res) => {
   }
 });
 
+app.get('/api/sync-db', async (req, res) => {
+  try {
+    const { syncDumpToTiDB } = require('./db');
+    const result = await syncDumpToTiDB();
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 // Login endpoint
 app.post('/api/auth/login', async (req, res) => {
   try {
