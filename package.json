@@ -7,13 +7,22 @@
     "start": "node server/server.js",
     "dev": "node --watch server/server.js"
   },
-  "keywords": ["pos", "fashion", "glownest", "kariakoo", "layaway", "sales"],
+  "keywords": [
+    "pos",
+    "fashion",
+    "glownest",
+    "kariakoo",
+    "layaway",
+    "sales"
+  ],
   "author": "GLOWNEST Smart Wear",
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
+    "dotenv": "^18.0.9",
     "express": "^4.19.2",
     "multer": "^1.4.5-lts.1",
+    "mysql2": "^3.24.6",
     "sqlite3": "^5.1.7"
   }
 }
