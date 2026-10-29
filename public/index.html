@@ -1,0 +1,2523 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GLOWNEST Smart Wear | Golani Kijiweni - Kimara Suka DSM</title>
+  <link rel="icon" type="image/png" href="/assets/logo.png">
+  
+  <!-- Font Awesome, Chart.js & JsBarcode -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/extracted.css">
+</head>
+<body>
+
+  <!-- Ambient Visuals -->
+  <div class="app-bg-ambient"></div>
+  <div class="ambient-glow-1"></div>
+  <div class="ambient-glow-2"></div>
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-wrapper">
+        <div class="brand-logo-container">
+          <img src="/assets/logo.png" alt="GLOWNEST Smart Wear Logo" class="brand-logo-img">
+        </div>
+        <div class="brand-text">
+          <h1>GLOWNEST <span class="brand-badge">SMART WEAR</span></h1>
+          <div class="brand-subtitle" id="headerBrandSubtitle">
+            <i class="fa-solid fa-location-dot ext-style-1"></i> 
+            <span id="headerStoreLocation">GOLANI KIJIWENI - KIMARA SUKA DSM-TZ</span> 
+            <span class="subtitle-sep">&bull;</span> Nguo Kali Kutoka Kariakoo
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="nav-tabs">
+        <button class="nav-btn active" data-tab="pos-view">
+          <i class="fa-solid fa-cash-register"></i> Mauzo / Keshia
+        </button>
+        <button class="nav-btn" data-tab="inventory-view">
+          <i class="fa-solid fa-boxes-stacked"></i> Stoo & Bei
+          <span id="lowStockBadge" class="nav-badge-count ext-style-2">0</span>
+        </button>
+        <button class="nav-btn" data-tab="orders-view">
+          <i class="fa-solid fa-clipboard-list"></i> Oda za Nguo
+          <span id="ordersBadge" class="nav-badge-count ext-style-2">0</span>
+        </button>
+        <button class="nav-btn" data-tab="layaway-view">
+          <i class="fa-solid fa-piggy-bank"></i> Kuwekeza (Akiba)
+          <span id="layawayBadge" class="nav-badge-count ext-style-2">0</span>
+        </button>
+        <button class="nav-btn" data-tab="cashier-shift-view" id="navCashierShift">
+          <i class="fa-solid fa-receipt"></i> Mauzo Yangu ya Leo
+        </button>
+        <button class="nav-btn" data-tab="daily-revenue-view" id="navDailyRevenue">
+          <i class="fa-solid fa-coins"></i> Mapato ya Siku
+        </button>
+        <button class="nav-btn admin-only" data-tab="credit-view">
+          <i class="fa-solid fa-file-invoice-dollar"></i> Mikopo & Madeni
+          <span id="creditBadge" class="nav-badge-count ext-style-2">0</span>
+        </button>
+        <button class="nav-btn" data-tab="expenses-view">
+          <i class="fa-solid fa-money-bill-transfer"></i> Matumizi
+        </button>
+        <button class="nav-btn admin-only" data-tab="reports-view">
+          <i class="fa-solid fa-chart-line"></i> Ripoti & Grafu
+        </button>
+        <button class="nav-btn admin-only" data-tab="settings-view">
+          <i class="fa-solid fa-gear"></i> Mipangilio & Wafanyakazi
+        </button>
+      </nav>
+
+      <!-- Live Clock & User Session Status -->
+      <div class="header-actions ext-style-3">
+        <!-- Theme Switcher / Mwangaza Toggle -->
+        <button id="btnThemeToggle" class="btn-theme-toggle" title="Badili Mwangaza / Giza (Light/Dark Mode)">
+          <i class="fa-solid fa-sun" id="themeIcon"></i>
+          <span id="themeLabel">Mwangaza</span>
+        </button>
+
+        <!-- User Session Indicator -->
+        <div class="user-session-badge" id="userSessionBadge">
+          <i class="fa-solid fa-circle-user ext-style-4" id="userRoleIcon"></i>
+          <div class="ext-style-5">
+            <div id="sessionUserName" class="ext-style-6">CASHIER</div>
+            <span class="user-role-tag cashier" id="sessionUserRole">CASHIER</span>
+          </div>
+          <button id="btnLogout" onclick="handleLogout()" title="Toka / Badili Mtumiaji" class="ext-style-7">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> Toka
+          </button>
+        </div>
+
+        <button class="btn-secondary admin-only ext-style-8" id="btnOpenZReportModal">
+          <i class="fa-solid fa-calculator"></i> Funga Hesabu (Z-Report)
+        </button>
+        <div class="live-clock-card">
+          <div id="liveClock" class="live-time">00:00:00</div>
+          <div id="liveDate" class="live-date">Tarehe...</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Application Body -->
+  <main class="main-wrapper">
+
+    <!-- Top KPI Grid (Visible Across Relevant Sections) -->
+    <div class="kpi-grid">
+      <div class="kpi-card gold ext-style-9" id="kpiCardDailyRevenue" title="Bonyeza kutazama maelezo kamili ya Mapato ya Siku">
+        <div class="kpi-header">
+          <span class="kpi-title">Mapato Halisi ya Leo (Kusanyiko)</span>
+          <div class="kpi-icon gold"><i class="fa-solid fa-coins"></i></div>
+        </div>
+        <div class="kpi-value" id="kpiTodayInflow">TZS 0</div>
+        <div class="kpi-footer ext-style-10" id="kpiInflowBreakdown">
+          <span>Mauzo: <b id="kpiSubMauzo">0</b></span> &bull; 
+          <span>Wanaowekeza: <b id="kpiSubWekeza">0</b></span> &bull; 
+          <span>Mikopo: <b id="kpiSubMikopo">0</b></span>
+        </div>
+      </div>
+
+      <div class="kpi-card rose">
+        <div class="kpi-header">
+          <span class="kpi-title">Matumizi ya Duka (Leo)</span>
+          <div class="kpi-icon rose"><i class="fa-solid fa-arrow-down-wide-short"></i></div>
+        </div>
+        <div class="kpi-value" id="kpiTodayExpenses">TZS 0</div>
+        <div class="kpi-footer"><i class="fa-solid fa-money-bill-transfer"></i> Nauli, umeme, mifuko, n.k.</div>
+      </div>
+
+      <div class="kpi-card emerald admin-only-kpi">
+        <div class="kpi-header">
+          <span class="kpi-title">Faida Halisi ya Leo (Net)</span>
+          <div class="kpi-icon emerald"><i class="fa-solid fa-chart-pie"></i></div>
+        </div>
+        <div class="kpi-value" id="kpiTodayProfit">TZS 0</div>
+        <div class="kpi-footer" id="kpiProfitBreakdown"><i class="fa-solid fa-arrow-trend-up"></i> Faida ya nguo ukitoa matumizi</div>
+      </div>
+
+      <div class="kpi-card cyan admin-only-kpi">
+        <div class="kpi-header">
+          <span class="kpi-title">Thamani ya Stoo (Mzigo Uliopo)</span>
+          <div class="kpi-icon cyan"><i class="fa-solid fa-tags"></i></div>
+        </div>
+        <div class="kpi-value" id="kpiStockValue">TZS 0</div>
+        <div class="kpi-footer"><i class="fa-solid fa-shirt"></i> <span id="kpiTotalStockUnits">0</span> nguo zilizopo stoo</div>
+      </div>
+
+      <!-- Cashier-specific KPIs (Shown only for cashier role) -->
+      <div class="kpi-card gold cashier-only-kpi">
+        <div class="kpi-header">
+          <span class="kpi-title">Mauzo Yangu ya Leo (Cashier)</span>
+          <div class="kpi-icon gold"><i class="fa-solid fa-cash-register"></i></div>
+        </div>
+        <div class="kpi-value" id="kpiCashierSales">TZS 0</div>
+        <div class="kpi-footer"><i class="fa-solid fa-user-check"></i> Mauzo uliyofanya wewe mwenyewe leo</div>
+      </div>
+
+      <div class="kpi-card cyan cashier-only-kpi">
+        <div class="kpi-header">
+          <span class="kpi-title">Nguo Nilizouza Leo</span>
+          <div class="kpi-icon cyan"><i class="fa-solid fa-shirt"></i></div>
+        </div>
+        <div class="kpi-value" id="kpiCashierUnits">0 pcs</div>
+        <div class="kpi-footer"><i class="fa-solid fa-check-double"></i> Idadi ya nguo ulizokata risiti leo</div>
+      </div>
+
+      <div class="kpi-card purple">
+        <div class="kpi-header">
+          <span class="kpi-title">Kuwekeza Kidogo Kidogo (Akiba)</span>
+          <div class="kpi-icon purple"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+        </div>
+        <div class="kpi-value" id="kpiLayawayDeposited">TZS 0</div>
+        <div class="kpi-footer"><i class="fa-solid fa-clock-rotate-left"></i> Wateja <span id="kpiActiveLayaways">0</span> wanaoweka akiba</div>
+      </div>
+
+      <div class="kpi-card rose admin-only-kpi">
+        <div class="kpi-header">
+          <span class="kpi-title">Madeni ya Mikopo (Wateja)</span>
+          <div class="kpi-icon rose"><i class="fa-solid fa-handshake-angle"></i></div>
+        </div>
+        <div class="kpi-value" id="kpiCreditDue">TZS 0</div>
+        <div class="kpi-footer"><i class="fa-solid fa-user-clock"></i> Wateja <span id="kpiActiveDebtors">0</span> wenye madeni</div>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- 1. TAB: POS / MAUZO NA KESHIA                           -->
+    <!-- ======================================================== -->
+    <section id="pos-view" class="tab-content active">
+      <div class="pos-layout">
+        <!-- Products Catalog -->
+        <div class="catalog-panel">
+          <div class="catalog-header">
+            <div class="search-filter-bar">
+              <div class="search-input-wrapper">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" id="posSearchInput" placeholder="Tafuta nguo kwa jina, msimbo (code), saizi, rangi...">
+              </div>
+              <div class="gender-filters">
+                <select id="posGenderFilter" class="form-control ext-style-11" title="Chuja kwa Rika au Jinsia" aria-label="Chuja kwa Rika au Jinsia">
+                  <option value="all">Rika / Jinsia Zote</option>
+                  <option value="Wanaume">Wanaume</option>
+                  <option value="Wanawake">Wanawake</option>
+                  <option value="Watoto">Watoto</option>
+                  <option value="Unisex">Unisex</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Category Pills -->
+            <div class="filter-pills" id="posCategoryPills">
+              <button class="pill-btn active" data-category="all">Zote (All)</button>
+              <button class="pill-btn" data-category="Jeans">Jeans za Kiume & Kike</button>
+              <button class="pill-btn" data-category="Magauni">Magauni & Mitoko</button>
+              <button class="pill-btn" data-category="Mashati">Mashati ya Pamba</button>
+              <button class="pill-btn" data-category="Tracksuits">Tracksuits & Full Sets</button>
+              <button class="pill-btn" data-category="T-Shirts">T-Shirts Kali</button>
+              <button class="pill-btn" data-category="Suruali">Suruali za Vitambaa</button>
+              <button class="pill-btn" data-category="Watoto">Nguo za Watoto</button>
+              <button class="pill-btn" data-category="Nyinginezo">Nyinginezo</button>
+            </div>
+          </div>
+
+          <!-- Product Grid List -->
+          <div class="products-grid" id="posProductsGrid">
+            <!-- Dynamic items rendered by JS -->
+          </div>
+        </div>
+
+        <!-- Cart Panel -->
+        <div class="cart-panel">
+          <div class="cart-header">
+            <h2><i class="fa-solid fa-cart-shopping ext-style-1"></i> Kikapu cha Mauzo</h2>
+            <button class="cart-clear-btn" id="btnClearCart"><i class="fa-solid fa-trash-can"></i> Safisha</button>
+          </div>
+
+          <!-- Cart Items -->
+          <div class="cart-items-list" id="cartItemsContainer">
+            <div class="cart-empty-state">
+              <i class="fa-solid fa-bag-shopping ext-style-12"></i>
+              <p>Kikapu kiko tupu</p>
+              <small>Bofya nguo upande wa kushoto kuiongeza</small>
+            </div>
+          </div>
+
+          <!-- Checkout Box -->
+          <div class="cart-checkout-box">
+            <!-- Customer Details Input -->
+            <div class="form-row">
+              <div class="form-group ext-style-13">
+                <input type="text" id="cartCustomerName" class="form-control" placeholder="Jina la Mteja (Hiari)">
+              </div>
+              <div class="form-group ext-style-13">
+                <input type="text" id="cartCustomerPhone" class="form-control" placeholder="Namba ya Simu (Mf: 07...)">
+              </div>
+            </div>
+
+            <!-- Discount -->
+            <div class="discount-input-box">
+              <span class="ext-style-14">Punguzo (TZS):</span>
+              <input type="number" id="cartDiscountInput" min="0" value="0" placeholder="Punguzo (Discount)">
+            </div>
+
+            <!-- Payment Type Buttons -->
+            <div class="ext-style-15">Njia ya Mauzo:</div>
+            <div class="payment-methods-grid">
+              <button class="pay-mode-btn active" data-mode="cash">
+                <i class="fa-solid fa-money-bill-wave"></i> Pesa Taslimu (Cash)
+              </button>
+              <button class="pay-mode-btn" data-mode="lipa_namba">
+                <i class="fa-solid fa-mobile-screen-button"></i> Lipa Namba (Tigo/Airtel)
+              </button>
+              <button class="pay-mode-btn" data-mode="layaway">
+                <i class="fa-solid fa-piggy-bank"></i> Kuwekeza (Kidogo Kidogo)
+              </button>
+              <button class="pay-mode-btn" data-mode="credit">
+                <i class="fa-solid fa-handshake"></i> Mauzo ya Mkopo
+              </button>
+            </div>
+
+            <!-- Summary Totals -->
+            <div class="cart-summary-line">
+              <span>Jumla Ndogo (Subtotal):</span>
+              <span id="cartSubtotalVal">TZS 0</span>
+            </div>
+            <div class="cart-summary-line">
+              <span>Punguzo (Discount):</span>
+              <span id="cartDiscountVal" class="ext-style-16">- TZS 0</span>
+            </div>
+            <div class="cart-summary-line total">
+              <span>Jumla Kamili (Net):</span>
+              <span class="val" id="cartNetTotalVal">TZS 0</span>
+            </div>
+
+            <button class="btn-checkout-submit" id="btnOpenCheckoutModal">
+              <i class="fa-solid fa-check-double"></i> Kamilisha Mauzo / Toa Risiti
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- 2. TAB: STOO NA MANUNUZI (INVENTORY & RESTOCK)          -->
+    <!-- ======================================================== -->
+    <section id="inventory-view" class="tab-content">
+      <div class="data-table-card">
+        <div class="table-header-bar">
+          <div class="table-title">
+            <i class="fa-solid fa-warehouse ext-style-1"></i> Usimamizi wa Stoo na Orodha ya Bidhaa
+          </div>
+          <div class="ext-style-17">
+            <button class="btn-primary admin-only" id="btnOpenAddProductModal">
+              <i class="fa-solid fa-plus"></i> Sajili Nguo Mpya
+            </button>
+            <button class="btn-secondary admin-only ext-style-18" id="btnOpenRestockModal">
+              <i class="fa-solid fa-truck-ramp-box"></i> Ingiza Mzigo Mpya (Restock)
+            </button>
+          </div>
+        </div>
+
+        <div class="search-filter-bar ext-style-19">
+          <div class="search-input-wrapper">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" id="inventorySearchInput" placeholder="Tafuta kwenye stoo kwa jina au kategoria...">
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="custom-table" id="inventoryTable">
+            <thead>
+              <tr>
+                <th>Msimbo (Code)</th>
+                <th>Picha & Jina la Nguo</th>
+                <th>Kategoria & Rika</th>
+                <th>Saizi & Rangi</th>
+                <th class="admin-only">Bei ya Kununulia (Gharama)</th>
+                <th>Bei ya Kuuzia</th>
+                <th>Stoo Iliyopo</th>
+                <th>Hali (Status)</th>
+                <th class="admin-only">Vitendo</th>
+              </tr>
+            </thead>
+            <tbody id="inventoryTableBody">
+              <!-- JS Populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Recent Purchases History -->
+      <div class="data-table-card admin-only">
+        <div class="table-header-bar">
+          <div class="table-title">
+            <i class="fa-solid fa-clock-rotate-left ext-style-20"></i> Kumbukumbu ya Manunuzi ya Mzigo (Purchases History)
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Tarehe</th>
+                <th>Nguo / Bidhaa</th>
+                <th>Msambazaji (Supplier)</th>
+                <th>Idadi (Pcs)</th>
+                <th>Bei ya Jumla (Pcs)</th>
+                <th>Jumla ya Gharama</th>
+                <th>Maelezo</th>
+              </tr>
+            </thead>
+            <tbody id="purchasesTableBody">
+              <!-- JS Populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- 2.5 TAB: ODA ZA NGUO ZA WATEJA (CUSTOMER ORDERS)          -->
+    <!-- ======================================================== -->
+    <section id="orders-view" class="tab-content">
+      <!-- Orders KPI Summary Cards -->
+      <div class="orders-kpi-grid">
+        <div class="orders-kpi-card gold">
+          <div class="orders-kpi-icon"><i class="fa-solid fa-clock"></i></div>
+          <div class="orders-kpi-body">
+            <span class="orders-kpi-label">Oda Zinazosubiriwa (Pending)</span>
+            <span class="orders-kpi-value" id="kpiOrdersPending">0</span>
+            <span class="orders-kpi-sub">Wateja wanaoendelea kusubiri</span>
+          </div>
+        </div>
+
+        <div class="orders-kpi-card cyan">
+          <div class="orders-kpi-icon"><i class="fa-solid fa-truck-fast"></i></div>
+          <div class="orders-kpi-body">
+            <span class="orders-kpi-label">Zimeagizwa Kariakoo</span>
+            <span class="orders-kpi-value" id="kpiOrdersOrdered">0</span>
+            <span class="orders-kpi-sub">Ziko njiani au kiwandani</span>
+          </div>
+        </div>
+
+        <div class="orders-kpi-card purple">
+          <div class="orders-kpi-icon"><i class="fa-solid fa-store"></i></div>
+          <div class="orders-kpi-body">
+            <span class="orders-kpi-label">Zimefika Dukani (Tayari)</span>
+            <span class="orders-kpi-value" id="kpiOrdersArrived">0</span>
+            <span class="orders-kpi-sub">Tayari kwa mteja kuchukua</span>
+          </div>
+        </div>
+
+        <div class="orders-kpi-card rose">
+          <div class="orders-kpi-icon"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+          <div class="orders-kpi-body">
+            <span class="orders-kpi-label">Baki Inayodaiwa Kwenye Oda</span>
+            <span class="orders-kpi-value" id="kpiOrdersBalanceDue">TZS 0</span>
+            <span class="orders-kpi-sub">Italipwa wakati wa kukabidhi</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="data-table-card">
+        <div class="table-header-bar">
+          <div class="table-title">
+            <i class="fa-solid fa-clipboard-list ext-style-21"></i> Orodha ya Oda za Nguo za Wateja (Customer Orders)
+          </div>
+          <div class="ext-style-17">
+            <button class="btn-primary" id="btnOpenAddOrderModal">
+              <i class="fa-solid fa-plus"></i> Weka Oda Mpya ya Nguo
+            </button>
+            <button class="btn-secondary ext-style-18" id="btnRefreshOrders">
+              <i class="fa-solid fa-arrows-rotate"></i> Burudisha
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter & Search Toolbar -->
+        <div class="orders-filter-toolbar">
+          <div class="search-input-wrapper ext-style-22">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" id="ordersSearchInput" placeholder="Tafuta kwa mteja, namba ya simu, aina ya nguo, namba ya oda...">
+          </div>
+
+          <div class="orders-status-pills" id="ordersStatusPills">
+            <button class="order-pill-btn active" data-status="all">Zote</button>
+            <button class="order-pill-btn" data-status="pending">Inasubiriwa</button>
+            <button class="order-pill-btn" data-status="ordered">Imeagizwa Kariakoo</button>
+            <button class="order-pill-btn" data-status="arrived">Imefika Dukani</button>
+            <button class="order-pill-btn" data-status="delivered">Imekabidhiwa</button>
+            <button class="order-pill-btn" data-status="cancelled">Imeghairiwa</button>
+          </div>
+
+          <div class="orders-date-filter ext-style-23">
+            <label for="ordersTargetDateFilter" class="ext-style-24"><i class="fa-regular fa-calendar"></i> Tarehe ya Ahadi:</label>
+            <input type="date" id="ordersTargetDateFilter" class="form-control ext-style-25" title="Chuja kwa Tarehe ya Ahadi" aria-label="Chuja kwa Tarehe ya Ahadi">
+            <button class="btn-secondary ext-style-26" id="btnClearOrdersDate" title="Safisha tarehe"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="table-responsive">
+          <table class="custom-table" id="ordersTable">
+            <thead>
+              <tr>
+                <th>Namba ya Oda</th>
+                <th>Picha & Nguo Iliyoagizwa</th>
+                <th>Mteja & Mawasiliano (Simu/WhatsApp)</th>
+                <th>Tarehe ya Ahadi / Kufika</th>
+                <th>Idadi & Saizi</th>
+                <th>Bei & Malipo</th>
+                <th>Hali (Status)</th>
+                <th>Vitendo</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTableBody">
+              <!-- JS Populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- 3. TAB: KUWEKEZA / AKIBA (LAYAWAY)                       -->
+    <!-- ======================================================== -->
+    <section id="layaway-view" class="tab-content">
+      <div class="data-table-card">
+        <div class="table-header-bar">
+          <div class="table-title">
+            <i class="fa-solid fa-piggy-bank ext-style-27"></i> Wateja Wanaowekeza Kidogo Kidogo (Weka Akiba & Chukua Nguo)
+          </div>
+          <div class="search-input-wrapper ext-style-28">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" id="layawaySearchInput" placeholder="Tafuta mteja au risiti...">
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Namba ya Risiti</th>
+                <th>Tarehe</th>
+                <th>Jina la Mteja & Simu</th>
+                <th>Thamani ya Nguo</th>
+                <th>Kiasi Kilicholipwa</th>
+                <th>Baki Inayodaiwa</th>
+                <th>Maendeleo ya Malipo</th>
+                <th>Hali (Status)</th>
+                <th>Vitendo</th>
+              </tr>
+            </thead>
+            <tbody id="layawayTableBody">
+              <!-- JS Populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- 3.5 TAB: MAUZO YANGU YA LEO (CASHIER SHIFT & SALES)      -->
+    <!-- ======================================================== -->
+    <section id="cashier-shift-view" class="tab-content">
+      <div class="data-table-card">
+        <div class="table-header-bar">
+          <div class="table-title">
+            <i class="fa-solid fa-receipt ext-style-21"></i> Mauzo Yangu ya Leo (Shift ya Muuzaji)
+          </div>
+          <div class="ext-style-29">
+            <span class="ext-style-30">Tarehe: <strong id="shiftCurrentDate" class="ext-style-31">-</strong></span>
+            <button class="btn-secondary ext-style-32" id="btnRefreshShift">
+              <i class="fa-solid fa-arrows-rotate"></i> Sasisha Mauzo
+            </button>
+          </div>
+        </div>
+
+        <!-- Mini Shift KPIs for Cashier -->
+        <div class="ext-style-33">
+          <div class="ext-style-34">
+            <div class="ext-style-35">Jumla Uliyokusanya Leo:</div>
+            <div class="ext-style-36" id="shiftTotalCollected">TZS 0</div>
+            <div class="ext-style-37"><span id="shiftTxCount">0</span> miamala iliyofanyika</div>
+          </div>
+
+          <div class="ext-style-38">
+            <div class="ext-style-35">Pesa Taslimu (Cash Drooni):</div>
+            <div class="ext-style-39" id="shiftCashCollected">TZS 0</div>
+            <div class="ext-style-37">Inayopaswa kuwa mkononi</div>
+          </div>
+
+          <div class="ext-style-40">
+            <div class="ext-style-35">Lipa Namba (Simu):</div>
+            <div class="ext-style-41" id="shiftLipaCollected">TZS 0</div>
+            <div class="ext-style-37">Tigo Pesa & Airtel Money</div>
+          </div>
+
+          <div class="ext-style-42">
+            <div class="ext-style-35">Malipo ya Akiba (Layaway):</div>
+            <div class="ext-style-43" id="shiftLayawayCollected">TZS 0</div>
+            <div class="ext-style-37">Awamu zilizopokelewa leo</div>
+          </div>
+        </div>
+
+        <!-- Shift Sales Search & Table -->
+        <div class="search-filter-bar ext-style-19">
+          <div class="search-input-wrapper">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" id="shiftSearchInput" placeholder="Tafuta risiti ya leo kwa namba au jina la mteja...">
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="custom-table" id="shiftSalesTable">
+            <thead>
+              <tr>
+                <th>Risiti #</th>
+                <th>Saa</th>
+                <th>Mteja & Simu</th>
+                <th>Thamani ya Nguo</th>
+                <th>Kiasi Kilicholipwa</th>
+                <th>Njia ya Malipo</th>
+                <th>Baki</th>
+                <th>Hali</th>
+                <th>Vitendo</th>
+              </tr>
+            </thead>
+            <tbody id="shiftSalesTableBody">
+              <!-- JS Populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- 3.7 TAB: MAPATO YA SIKU (DAILY REVENUE & COLLECTIONS)    -->
+    <!-- ======================================================== -->
+    <section id="daily-revenue-view" class="tab-content">
+      <!-- Filter Bar -->
+      <div class="data-table-card ext-style-44">
+        <div class="ext-style-45">
+          <div class="ext-style-46">
+            <div class="ext-style-47">
+              <i class="fa-solid fa-sack-dollar"></i>
+            </div>
+            <div>
+              <h2 class="ext-style-48">Mapato na Makusanyo ya Siku</h2>
+              <p class="ext-style-49">Mchanganuo wa Mauzo ya Moja kwa Moja, Wanaowekeza Kidogo Kidogo, na Marejesho ya Mikopo</p>
+            </div>
+          </div>
+          
+          <div class="ext-style-50">
+            <div class="ext-style-51">
+              <label for="dailyRevenueDatePicker" class="ext-style-52">Tarehe:</label>
+              <input type="date" id="dailyRevenueDatePicker" class="custom-input ext-style-53">
+            </div>
+            <button class="btn-secondary ext-style-54" id="btnDailyRevToday">
+              <i class="fa-solid fa-calendar-day"></i> Leo
+            </button>
+            <button class="btn-secondary ext-style-54" id="btnDailyRevYesterday">
+              <i class="fa-solid fa-clock-rotate-left"></i> Jana
+            </button>
+            <button class="btn-primary ext-style-55" id="btnPrintDailyRevenue">
+              <i class="fa-solid fa-print"></i> Chapisha Ripoti
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 Pillars Revenue Grid -->
+      <div class="kpi-grid ext-style-56">
+        <!-- Pillar 1: Jumla Kuu ya Mapato -->
+        <div class="kpi-card emerald ext-style-57">
+          <div class="kpi-header">
+            <span class="kpi-title ext-style-58">Jumla Kuu ya Mapato ya Siku</span>
+            <div class="kpi-icon emerald"><i class="fa-solid fa-coins"></i></div>
+          </div>
+          <div class="kpi-value ext-style-59" id="drTotalInflow">TZS 0</div>
+          <div class="kpi-footer"><i class="fa-solid fa-receipt"></i> Miamala yote ya fedha zilizoingia: <b id="drTotalCount">0</b></div>
+        </div>
+
+        <!-- Pillar 2: Mauzo ya Moja kwa Moja -->
+        <div class="kpi-card gold">
+          <div class="kpi-header">
+            <span class="kpi-title">1. Mauzo ya Moja kwa Moja</span>
+            <div class="kpi-icon gold"><i class="fa-solid fa-cart-shopping"></i></div>
+          </div>
+          <div class="kpi-value" id="drDirectSalesTotal">TZS 0</div>
+          <div class="kpi-footer"><i class="fa-solid fa-tags"></i> Papo kwa papo: <b id="drDirectSalesCount">0</b> miamala</div>
+        </div>
+
+        <!-- Pillar 3: Wanaowekeza Kidogo Kidogo -->
+        <div class="kpi-card purple">
+          <div class="kpi-header">
+            <span class="kpi-title">2. Wanaowekeza Kidogo Kidogo</span>
+            <div class="kpi-icon purple"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+          </div>
+          <div class="kpi-value ext-style-27" id="drLayawayTotal">TZS 0</div>
+          <div class="kpi-footer"><i class="fa-solid fa-clock-rotate-left"></i> Amana na awamu za akiba: <b id="drLayawayCount">0</b></div>
+        </div>
+
+        <!-- Pillar 4: Wanaowasilisha Fedha za Mkopo -->
+        <div class="kpi-card rose">
+          <div class="kpi-header">
+            <span class="kpi-title">3. Wanaowasilisha Fedha za Mkopo</span>
+            <div class="kpi-icon rose"><i class="fa-solid fa-handshake-angle"></i></div>
+          </div>
+          <div class="kpi-value ext-style-16" id="drCreditTotal">TZS 0</div>
+          <div class="kpi-footer"><i class="fa-solid fa-user-clock"></i> Marejesho ya madeni ya mikopo: <b id="drCreditCount">0</b></div>
+        </div>
+      </div>
+
+      <!-- Payment Breakdown & Cashflow Summary -->
+      <div class="ext-style-60">
+        <div class="data-table-card ext-style-61">
+          <div class="ext-style-62">
+            <i class="fa-solid fa-wallet ext-style-21"></i> Njia za Malipo Zilizopokelewa
+          </div>
+          <div class="ext-style-63">
+            <div class="ext-style-64">
+              <span><i class="fa-solid fa-money-bill-1-wave ext-style-65"></i> Pesa Taslimu (Cash):</span>
+              <strong id="drPayCash">TZS 0</strong>
+            </div>
+            <div class="ext-style-64">
+              <span><i class="fa-solid fa-mobile-screen-button ext-style-66"></i> Tigo Pesa Lipa:</span>
+              <strong id="drPayTigo">TZS 0</strong>
+            </div>
+            <div class="ext-style-64">
+              <span><i class="fa-solid fa-signal ext-style-67"></i> Airtel Money Lipa:</span>
+              <strong id="drPayAirtel">TZS 0</strong>
+            </div>
+            <div class="ext-style-68">
+              <span><i class="fa-solid fa-circle-nodes"></i> Nyinginezo:</span>
+              <strong id="drPayOther">TZS 0</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="data-table-card ext-style-61">
+          <div class="ext-style-62">
+            <i class="fa-solid fa-scale-balanced ext-style-20"></i> Mizania ya Fedha Mkononi (Net Cashflow)
+          </div>
+          <div class="ext-style-63">
+            <div class="ext-style-64">
+              <span>Jumla ya Fedha Zote Zilizoingia:</span>
+              <strong id="drSummaryInflow" class="ext-style-31">TZS 0</strong>
+            </div>
+            <div class="ext-style-64">
+              <span>Matumizi ya Duka Siku Hii:</span>
+              <strong id="drSummaryExpenses" class="ext-style-16">- TZS 0</strong>
+            </div>
+            <div class="ext-style-69">
+              <span class="ext-style-70">Fedha Halisi Zilizobaki:</span>
+              <strong id="drSummaryNet" class="ext-style-71">TZS 0</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Itemized Collections Table -->
+      <div class="data-table-card">
+        <div class="table-header-bar">
+          <div class="table-title">
+            <i class="fa-solid fa-list-check ext-style-31"></i> Orodha ya Miamala Yote ya Mapato Siku Hii (<span id="dailyRevTableCount">0</span>)
+          </div>
+          <div class="search-input-wrapper ext-style-28">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" id="searchDailyRevInput" class="custom-input ext-style-72" placeholder="Tafuta mteja, risiti, kiasi...">
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="custom-table" id="dailyRevenueTable">
+            <thead>
+              <tr>
+                <th>Muda</th>
+                <th>Risiti / Namba</th>
+                <th>Jina la Mteja</th>
+                <th>Aina ya Mapato</th>
+                <th>Njia ya Malipo</th>
+                <th>Mhudumu / Keshia</th>
+                <th class="ext-style-73">Kiasi (TZS)</th>
+              </tr>
+            </thead>
+            <tbody id="dailyRevenueTableBody">
+              <!-- JS Populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- 4. TAB: MIKOPO & MADENI (CREDIT LEDGER)                  -->
+    <!-- ======================================================== -->
+    <section id="credit-view" class="tab-content admin-only">
+      <div class="data-table-card">
+        <div class="table-header-bar">
+          <div class="table-title">
+            <i class="fa-solid fa-handshake-angle ext-style-16"></i> Daftari la Wateja Waliokopa (Mauzo ya Mkopo)
+          </div>
+          <div class="search-input-wrapper ext-style-28">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" id="creditSearchInput" placeholder="Tafuta mteja wa mkopo...">
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Namba ya Risiti</th>
+                <th>Tarehe ya Kuchukua</th>
+                <th>Tarehe ya Malipo (Due Date)</th>
+                <th>Mteja & Namba ya Simu</th>
+                <th>Jumla ya Mkopo</th>
+                <th>Kiasi Kilicholipwa</th>
+                <th>Deni Lililobaki</th>
+                <th>Hali ya Mkopo</th>
+                <th>Vitendo</th>
+              </tr>
+            </thead>
+            <tbody id="creditTableBody">
+              <!-- JS Populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- 4.5 TAB: MATUMIZI YA DUKA (SHOP EXPENSES)                -->
+    <!-- ======================================================== -->
+    <section id="expenses-view" class="tab-content">
+      <div class="data-table-card">
+        <div class="table-header-bar">
+          <div class="table-title">
+            <i class="fa-solid fa-money-bill-transfer ext-style-16"></i> Daftari la Matumizi ya Kila Siku ya Duka
+          </div>
+          <div class="ext-style-17">
+            <button class="btn-primary ext-style-74" id="btnOpenAddExpenseModal">
+              <i class="fa-solid fa-plus"></i> Rekodi Matumizi Mapya
+            </button>
+          </div>
+        </div>
+
+        <div class="search-filter-bar ext-style-75">
+          <div class="search-input-wrapper ext-style-28">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" id="expenseSearchInput" placeholder="Tafuta matumizi...">
+          </div>
+          <div class="ext-style-76">
+            <select id="expenseCategoryFilter" class="form-control ext-style-77" title="Chuja Kategoria ya Matumizi" aria-label="Chuja Kategoria ya Matumizi">
+              <option value="all">Kategoria Zote za Matumizi</option>
+              <option value="Nauli/Mzigo Kariakoo">Nauli/Mzigo Kariakoo</option>
+              <option value="Umeme/LUKU">Umeme/LUKU</option>
+              <option value="Vifungashio/Mifuko">Vifungashio/Mifuko</option>
+              <option value="Chakula/Maji">Chakula/Maji</option>
+              <option value="Kodi/Fremu">Kodi/Fremu</option>
+              <option value="Matangazo">Matangazo</option>
+              <option value="Nyinginezo">Nyinginezo</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="custom-table" id="expensesTable">
+            <thead>
+              <tr>
+                <th>Tarehe</th>
+                <th>Maelezo ya Matumizi</th>
+                <th>Kategoria</th>
+                <th>Njia ya Malipo</th>
+                <th>Kiasi (TZS)</th>
+                <th>Maelezo ya Ziada</th>
+                <th>Kitendo</th>
+              </tr>
+            </thead>
+            <tbody id="expensesTableBody">
+              <!-- JS Populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- 5. TAB: RIPOTI NA GRAFU ZA BIASHARA                     -->
+    <!-- ======================================================== -->
+    <section id="reports-view" class="tab-content">
+      <div class="data-table-card ext-style-78">
+        <div class="table-header-bar">
+          <div class="table-title">
+            <i class="fa-solid fa-chart-line ext-style-21"></i> Ripoti za Mauzo, Faida na Mwelekeo wa Biashara
+          </div>
+          <div class="ext-style-79">
+            <div class="filter-pills">
+              <button class="pill-btn active" data-period="7days">Siku 7 Zilizopita</button>
+              <button class="pill-btn" data-period="30days">Siku 30 Zilizopita</button>
+              <button class="pill-btn" data-period="months">Kila Mwezi (12 Months)</button>
+              <button class="pill-btn" data-period="years">Kila Mwaka</button>
+            </div>
+            <button class="btn-secondary ext-style-80" id="btnExportCSV">
+              <i class="fa-solid fa-file-excel"></i> Pakua Excel/CSV
+            </button>
+          </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div class="chart-header">
+              <span class="chart-title"><i class="fa-solid fa-chart-area ext-style-1"></i> Mwenendo wa Mauzo na Faida Halisi (Kupanda na Kushuka)</span>
+            </div>
+            <div class="chart-container-box">
+              <canvas id="salesTrendChart"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-header">
+              <span class="chart-title"><i class="fa-solid fa-chart-pie ext-style-20"></i> Mauzo kwa Kategoria</span>
+            </div>
+            <div class="chart-container-box">
+              <canvas id="categoryDistributionChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Comprehensive Sales History Table -->
+      <div class="data-table-card">
+        <div class="table-header-bar">
+          <div class="table-title">
+            <i class="fa-solid fa-receipt ext-style-31"></i> Orodha ya Miamala Yote ya Mauzo
+          </div>
+          <div class="search-input-wrapper ext-style-81">
+            <input type="date" id="reportDateFilter" class="form-control ext-style-82" title="Chuja kwa Tarehe ya Mauzo" aria-label="Chuja kwa Tarehe ya Mauzo">
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Risiti</th>
+                <th>Tarehe & Saa</th>
+                <th>Mteja</th>
+                <th>Njia ya Malipo</th>
+                <th>Jumla Kuu</th>
+                <th>Kiasi Kilicholipwa</th>
+                <th>Baki</th>
+                <th>Hali</th>
+                <th>Kitendo</th>
+              </tr>
+            </thead>
+            <tbody id="salesReportTableBody">
+              <!-- JS Populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- 6. TAB: MIPANGILIO YA DUKA (SETTINGS)                   -->
+    <!-- ======================================================== -->
+    <!-- ======================================================== -->
+    <!-- 6. TAB: MIPANGILIO YA DUKA (SETTINGS & PROFILE)         -->
+    <!-- ======================================================== -->
+    <section id="settings-view" class="tab-content">
+      <div class="settings-container ext-style-83">
+        
+        <!-- Luxury Store & Owner Profile Showcase -->
+        <div class="store-profile-card">
+          <div class="profile-card-glow"></div>
+          <div class="profile-card-content">
+            <div class="profile-avatar-wrapper">
+              <img src="/assets/logo.png" alt="GLOWNEST Logo" class="profile-avatar-img">
+              <div class="profile-avatar-badge" title="Duka Rasmi"><i class="fa-solid fa-crown"></i></div>
+            </div>
+
+            <div class="profile-info-block">
+              <div class="profile-tags-row">
+                <span class="profile-tag verified"><i class="fa-solid fa-circle-check"></i> Duka Lililothibitishwa</span>
+                <span class="profile-tag fashion"><i class="fa-solid fa-shirt"></i> Mitindo ya Kisasa</span>
+                <span class="profile-tag location-badge"><i class="fa-solid fa-location-dot"></i> Kimara Suka, DSM</span>
+              </div>
+
+              <h2 class="profile-shop-title" id="profileStoreName">GLOWNEST SMART WEAR</h2>
+              <p class="profile-tagline" id="profileStoreTagline">Nguo Kali na Mitindo ya Kisasa Kutoka Kariakoo</p>
+
+              <div class="profile-meta-grid">
+                <div class="profile-meta-item">
+                  <div class="meta-icon"><i class="fa-solid fa-user-tie"></i></div>
+                  <div class="meta-texts">
+                    <span class="meta-label">Mmiliki wa Duka</span>
+                    <strong class="meta-val" id="profileOwnerName">ABISHAI EVARISTO NGENZI</strong>
+                  </div>
+                </div>
+
+                <div class="profile-meta-item">
+                  <div class="meta-icon"><i class="fa-solid fa-map-location-dot"></i></div>
+                  <div class="meta-texts">
+                    <span class="meta-label">Mahali / Eneo Lilipo Duka</span>
+                    <strong class="meta-val" id="profileLocation">GOLANI KIJIWENI - KIMARA SUKA DSM-TZ</strong>
+                  </div>
+                </div>
+
+                <div class="profile-meta-item">
+                  <div class="meta-icon"><i class="fa-solid fa-phone-volume"></i></div>
+                  <div class="meta-texts">
+                    <span class="meta-label">Namba Kuu ya Simu</span>
+                    <strong class="meta-val" id="profilePhonePrimary">0656392400</strong>
+                  </div>
+                </div>
+
+                <div class="profile-meta-item">
+                  <div class="meta-icon"><i class="fa-solid fa-mobile-screen"></i></div>
+                  <div class="meta-texts">
+                    <span class="meta-label">Namba ya Pili ya Simu</span>
+                    <strong class="meta-val" id="profilePhoneSecondary">0685073565</strong>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Location & Kariakoo Sourcing Notice -->
+              <div class="profile-location-notice">
+                <i class="fa-solid fa-circle-info ext-style-84"></i>
+                <div>
+                  <strong>Taarifa ya Eneo & Mzigo:</strong> Duka letu lipo rasmi <strong>GOLANI KIJIWENI - KIMARA SUKA DSM-TZ</strong>. Nguo zetu zote ni mikusanyiko bora na ya kijanja iliyochaguliwa kwa mikono kutoka masoko makuu ya <strong>Kariakoo Dar es Salaam</strong>.
+                </div>
+              </div>
+
+              <!-- Payment Methods Showcase -->
+              <div class="profile-lipa-grid">
+                <div class="lipa-card tigo-card">
+                  <div class="lipa-badge"><i class="fa-solid fa-bolt"></i> Tigo Pesa Lipa Namba</div>
+                  <div class="lipa-number-display" id="profileTigoNumber">44834912</div>
+                  <div class="lipa-name-display">
+                    <span>Jina la Usajili:</span> <strong id="profileTigoName">ABISHAI</strong>
+                  </div>
+                </div>
+
+                <div class="lipa-card airtel-card">
+                  <div class="lipa-badge"><i class="fa-solid fa-bolt"></i> Airtel Money Lipa Namba</div>
+                  <div class="lipa-number-display" id="profileAirtelNumber">136541343</div>
+                  <div class="lipa-name-display">
+                    <span>Jina la Usajili:</span> <strong id="profileAirtelName">DORCAS</strong>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Settings Form Card -->
+        <div class="data-table-card">
+          <div class="table-header-bar">
+            <div class="table-title">
+              <i class="fa-solid fa-sliders ext-style-1"></i> Mipangilio ya Duka & Taarifa za Risiti
+            </div>
+          </div>
+
+          <form id="settingsForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="set_store_name">Jina Rasmi la Duka</label>
+                <input type="text" id="set_store_name" name="store_name" class="form-control" placeholder="GLOWNEST SMART WEAR" title="Jina Rasmi la Duka" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Jina Kamili la Mmiliki</label>
+                <input type="text" id="set_owner_name" name="owner_name" class="form-control" placeholder="ABISHAI EVARISTO NGENZI">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="set_store_tagline">Slogan / Kauli Mbiu</label>
+                <input type="text" id="set_store_tagline" name="store_tagline" class="form-control" placeholder="Slogan / Kauli Mbiu ya Duka" title="Slogan / Kauli Mbiu">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Mahali / Eneo Lilipo Duka</label>
+                <input type="text" id="set_store_location" name="store_location" class="form-control" placeholder="GOLANI KIJIWENI - KIMARA SUKA DSM-TZ">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Namba Kuu ya Simu (WhatsApp / Calls)</label>
+                <input type="text" id="set_store_phone_primary" name="store_phone_primary" class="form-control" placeholder="0656392400">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Namba ya Pili ya Simu</label>
+                <input type="text" id="set_store_phone_secondary" name="store_phone_secondary" class="form-control" placeholder="0685073565">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Namba za Simu (Kwenye Risiti)</label>
+                <input type="text" id="set_store_phone" name="store_phone" class="form-control" placeholder="0656392400 / 0685073565">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="set_currency">Sarafu (Currency)</label>
+                <input type="text" id="set_currency" name="currency" class="form-control" value="TZS" readonly placeholder="TZS" title="Sarafu (Currency)">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Lipa Namba ya Tigo Pesa</label>
+                <input type="text" id="set_tigo_lipa_number" name="tigo_lipa_number" class="form-control" placeholder="44834912">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Jina la Akaunti Tigo Pesa</label>
+                <input type="text" id="set_tigo_lipa_name" name="tigo_lipa_name" class="form-control" placeholder="ABISHAI">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Lipa Namba ya Airtel Money</label>
+                <input type="text" id="set_airtel_lipa_number" name="airtel_lipa_number" class="form-control" placeholder="136541343">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Jina la Akaunti Airtel Money</label>
+                <input type="text" id="set_airtel_lipa_name" name="airtel_lipa_name" class="form-control" placeholder="DORCAS">
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn-primary">
+                <i class="fa-solid fa-floppy-disk"></i> Hifadhi Mipangilio
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Staff & Cashier Management (Admin Only) -->
+        <div class="data-table-card ext-style-85">
+          <div class="table-header-bar">
+            <div class="table-title">
+              <i class="fa-solid fa-users-gear ext-style-21"></i> Usimamizi wa Wauzaji & PIN za Kuingilia Mfumo
+            </div>
+            <button type="button" class="btn-primary ext-style-86" id="btnOpenAddUserModal">
+              <i class="fa-solid fa-user-plus"></i> Sajili Mfanyakazi Mpya
+            </button>
+          </div>
+
+          <div class="ext-style-87">
+            <p class="ext-style-88">
+              Hapa unaweza kuweka na kubadilisha PIN za siri za wauzaji wako. Muuzaji akiingia kwenye mfumo kwa kutumia PIN yake, <strong>hataona kamwe faida ya duka, bei za kununulia nguo Kariakoo, wala mtaji wako</strong>. Kila mauzo anayofanya yataandikwa jina lake moja kwa moja.
+            </p>
+
+            <div class="table-responsive">
+              <table class="custom-table" id="usersTable">
+                <thead>
+                  <tr>
+                    <th>Jina Kamili</th>
+                    <th>Username</th>
+                    <th>Jukumu / Cheo</th>
+                    <th>Namba ya Simu</th>
+                    <th>PIN ya Kuingilia</th>
+                    <th>Hali</th>
+                    <th>Vitendo</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                  <!-- JS Populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Database Backup & Security Card -->
+        <div class="data-table-card ext-style-89">
+          <div class="table-header-bar">
+            <div class="table-title">
+              <i class="fa-solid fa-shield-halved ext-style-20"></i> Usalama wa Data & Hifadhi ya Database (Backup & Restore)
+            </div>
+          </div>
+
+          <div class="ext-style-90">
+            <p class="ext-style-91">
+              Hifadhi data zako zote za mauzo, madeni, nguo na matumizi. Inashauriwa kupakua nakala ya database (Backup) angalau mara 1 kwa wiki au kila mwezi na kuihifadhi kwenye Flash Drive au Google Drive ili kuzuia upotevu wa data endapo kompyuta itapata hitilafu.
+            </p>
+
+            <div class="ext-style-92">
+              <a href="/api/backup" class="btn-primary ext-style-93" id="btnDownloadBackup">
+                <i class="fa-solid fa-cloud-arrow-down"></i> Pakua Nakala ya Database (.db)
+              </a>
+
+              <button type="button" class="btn-secondary ext-style-94" id="btnTriggerRestore">
+                <i class="fa-solid fa-cloud-arrow-up"></i> Rudisha Data kutoka Faili (Restore)
+              </button>
+              <input type="file" id="restoreDbFileInput" accept=".db" class="ext-style-95" title="Chagua faili la database (.db) kurudisha data" aria-label="Chagua faili la database (.db) kurudisha data">
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ======================================================== -->
+  <!-- MODALS                                                   -->
+  <!-- ======================================================== -->
+
+  <!-- 1. CHECKOUT / CONFIRMATION MODAL -->
+  <div class="modal-overlay" id="checkoutModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title" id="checkoutModalTitle"><i class="fa-solid fa-money-check-dollar"></i> Kamilisha Mauzo</div>
+        <button class="modal-close-btn" data-close-modal title="Funga dirisha" aria-label="Funga dirisha"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div id="checkoutModalContent">
+        <!-- Dynamic fields depending on payment type -->
+        <div class="ext-style-96">
+          <div class="ext-style-97">
+            <span class="ext-style-98">Jumla Kamili ya Mauzo:</span>
+            <strong class="ext-style-99" id="modalNetTotalVal">TZS 0</strong>
+          </div>
+          <div class="ext-style-100">
+            <span class="ext-style-98">Njia ya Malipo:</span>
+            <strong id="modalPaymentTypeLabel">Pesa Taslimu (Cash)</strong>
+          </div>
+        </div>
+
+        <!-- Specific payment fields -->
+        <div id="lipaNambaFields" class="ext-style-2">
+          <!-- Visual Helper Cards for Lipa Namba -->
+          <div class="modal-lipa-notice-grid">
+            <div class="modal-lipa-pill tigo">
+              <div class="pill-top"><i class="fa-solid fa-bolt"></i> Tigo Pesa Lipa</div>
+              <div class="pill-num">44834912</div>
+              <div class="pill-name">Jina: <strong>ABISHAI</strong></div>
+            </div>
+            <div class="modal-lipa-pill airtel">
+              <div class="pill-top"><i class="fa-solid fa-bolt"></i> Airtel Money Lipa</div>
+              <div class="pill-num">136541343</div>
+              <div class="pill-name">Jina: <strong>DORCAS</strong></div>
+            </div>
+          </div>
+
+          <div class="form-group ext-style-101">
+            <label class="form-label" for="modalPaymentProvider">Mtandao wa Lipa Namba Uliotumika:</label>
+            <select id="modalPaymentProvider" class="form-control" title="Mtandao wa Lipa Namba Uliotumika" aria-label="Mtandao wa Lipa Namba Uliotumika">
+              <option value="Tigo Pesa (44834912 - ABISHAI)">Tigo Pesa Lipa Namba: 44834912 (Jina: ABISHAI)</option>
+              <option value="Airtel Money (136541343 - DORCAS)">Airtel Money Lipa Namba: 136541343 (Jina: DORCAS)</option>
+              <option value="M-Pesa Lipa Namba">M-Pesa / Mitandao Mingine</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Reference / Msimbo wa Muamala wa Simu (SMS Code):</label>
+            <input type="text" id="modalReferenceCode" class="form-control" placeholder="Mfano: QP987452...">
+          </div>
+        </div>
+
+        <div id="layawayFields" class="ext-style-2">
+          <div class="form-group">
+            <label class="form-label">Kiasi Anachotoa Awali (Deposit / Akiba ya Kwanza TZS):</label>
+            <input type="number" id="modalLayawayInitialPaid" class="form-control" placeholder="Weka kiasi anacholipa sasa">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Maelezo ya Ziada / Tarehe ya Kukamilisha:</label>
+            <input type="text" id="modalLayawayNotes" class="form-control" placeholder="Mf: Atamalizia mwisho wa mwezi">
+          </div>
+        </div>
+
+        <div id="creditFields" class="ext-style-2">
+          <div class="form-group">
+            <label class="form-label">Kiasi Anachotoa Awali (Down Payment TZS - Hiari):</label>
+            <input type="number" id="modalCreditInitialPaid" class="form-control" value="0" placeholder="0 kama hajalipa kitu">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="modalCreditDueDate">Tarehe ya Mwisho ya Kulipa (Due Date):</label>
+            <input type="date" id="modalCreditDueDate" class="form-control" title="Tarehe ya Mwisho ya Kulipa (Due Date)" aria-label="Tarehe ya Mwisho ya Kulipa (Due Date)">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Dhamana / Makubaliano ya Mkopo:</label>
+            <input type="text" id="modalCreditNotes" class="form-control" placeholder="Maelezo ya mteja au makubaliano">
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-secondary" data-close-modal>Ghairi</button>
+          <button class="btn-primary" id="btnConfirmFinalSale">
+            <i class="fa-solid fa-print"></i> Thibitisha & Toa Risiti
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. ADD PRODUCT MODAL -->
+  <div class="modal-overlay" id="addProductModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title"><i class="fa-solid fa-shirt"></i> Sajili Nguo Mpya Stoo</div>
+        <button class="modal-close-btn" data-close-modal title="Funga dirisha" aria-label="Funga dirisha"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form id="addProductForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Msimbo wa Nguo (Product Code)</label>
+            <input type="text" name="code" class="form-control" placeholder="Mf: GN-JNS-99">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Jina la Nguo</label>
+            <input type="text" name="name" class="form-control" placeholder="Mf: Majeje Jeans High Waist" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Kategoria</label>
+            <select name="category" class="form-control" title="Kategoria ya Nguo" aria-label="Kategoria ya Nguo" required>
+              <option value="Jeans">Jeans</option>
+              <option value="Magauni">Magauni</option>
+              <option value="Mashati">Mashati</option>
+              <option value="Tracksuits">Tracksuits</option>
+              <option value="T-Shirts">T-Shirts</option>
+              <option value="Suruali">Suruali</option>
+              <option value="Watoto">Watoto</option>
+              <option value="Nyinginezo">Nyinginezo</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Rika / Jinsia</label>
+            <select name="gender_age" class="form-control" title="Rika au Jinsia" aria-label="Rika au Jinsia">
+              <option value="Wanaume">Wanaume</option>
+              <option value="Wanawake">Wanawake</option>
+              <option value="Watoto">Watoto</option>
+              <option value="Unisex">Unisex</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Saizi (Sizes)</label>
+            <input type="text" name="size" class="form-control" placeholder="Mf: 30, 32, 34 au S, M, L">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Rangi (Colors)</label>
+            <input type="text" name="color" class="form-control" placeholder="Mf: Blue, Black, White">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Bei ya Kununulia (Gharama TZS)</label>
+            <input type="number" name="buy_price" class="form-control" placeholder="Mf: 20000" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Bei ya Kuuzia (TZS)</label>
+            <input type="number" name="sell_price" class="form-control" placeholder="Mf: 35000" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Idadi ya Kuanzia (Stock Quantity)</label>
+            <input type="number" name="stock_quantity" class="form-control" value="10" placeholder="10" title="Idadi ya Kuanzia (Stock Quantity)" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Arifa ya Mzigo Kuisha (Min Alert)</label>
+            <input type="number" name="min_stock_alert" class="form-control" value="3" placeholder="3" title="Arifa ya Mzigo Kuisha (Min Alert)">
+          </div>
+        </div>
+
+        <!-- Image Upload Component (Offline PC File + Online Link) -->
+        <div class="form-group">
+          <label class="form-label"><i class="fa-solid fa-camera"></i> Picha ya Nguo (Pakia kutoka PC au Link)</label>
+          <div class="image-upload-zone" id="addProductImageZone" onclick="document.getElementById('addProductImageInput').click()">
+            <input type="file" id="addProductImageInput" name="image" accept="image/*" class="ext-style-95" title="Pakia picha ya nguo kutoka PC" aria-label="Pakia picha ya nguo kutoka PC">
+            <div class="upload-prompt" id="addProductUploadPrompt">
+              <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+              <div class="upload-title">Bofya hapa kuchagua picha kutoka kwenye PC au buruta faili hapa</div>
+              <div class="upload-hint">Picha itahifadhiwa kwenye mfumo offline & online (JPG, PNG, WEBP)</div>
+            </div>
+            <div class="upload-preview-container ext-style-95" id="addProductPreviewContainer">
+              <img id="addProductPreviewImg" src="" alt="Picha ya Nguo" class="upload-preview-img">
+              <div class="preview-details">
+                <span id="addProductFileName" class="preview-filename">picha.jpg</span>
+                <button type="button" class="btn-clear-img" id="btnClearAddProductImg" onclick="event.stopPropagation(); clearAddProductImage();"><i class="fa-solid fa-trash-can"></i> Ondoa</button>
+              </div>
+            </div>
+          </div>
+          <div class="ext-style-102">
+            <span class="ext-style-103"><i class="fa-solid fa-link"></i> Au weka link ya picha mtandaoni:</span>
+            <input type="text" id="addProductImageUrlManual" name="image_url_manual" class="form-control ext-style-104" placeholder="https://mfano.com/picha.jpg">
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" data-close-modal>Ghairi</button>
+          <button type="submit" class="btn-primary"><i class="fa-solid fa-save"></i> Hifadhi Nguo</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2B. EDIT PRODUCT MODAL (KUREKEBISHA JINA, BEI NA TAARIFA ZA NGUO) -->
+  <div class="modal-overlay" id="editProductModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title ext-style-21"><i class="fa-solid fa-pen-to-square"></i> Hariri Jina & Bei ya Nguo</div>
+        <button class="modal-close-btn" data-close-modal title="Funga dirisha" aria-label="Funga dirisha"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form id="editProductForm">
+        <input type="hidden" id="edit_product_id" name="id">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Msimbo wa Nguo (Product Code)</label>
+            <input type="text" id="edit_code" name="code" class="form-control" placeholder="Msimbo wa Nguo" title="Msimbo wa Nguo" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Jina la Nguo</label>
+            <input type="text" id="edit_name" name="name" class="form-control" placeholder="Jina la Nguo" title="Jina la Nguo" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Kategoria</label>
+            <select id="edit_category" name="category" class="form-control" title="Kategoria ya Nguo" aria-label="Kategoria ya Nguo" required>
+              <option value="Jeans">Jeans</option>
+              <option value="Magauni">Magauni</option>
+              <option value="Mashati">Mashati</option>
+              <option value="Tracksuits">Tracksuits</option>
+              <option value="T-Shirts">T-Shirts</option>
+              <option value="Suruali">Suruali</option>
+              <option value="Watoto">Watoto</option>
+              <option value="Nyinginezo">Nyinginezo</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Rika / Jinsia</label>
+            <select id="edit_gender_age" name="gender_age" class="form-control" title="Rika au Jinsia" aria-label="Rika au Jinsia">
+              <option value="Wanaume">Wanaume</option>
+              <option value="Wanawake">Wanawake</option>
+              <option value="Watoto">Watoto</option>
+              <option value="Unisex">Unisex</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Saizi (Sizes)</label>
+            <input type="text" id="edit_size" name="size" class="form-control" placeholder="Mf: 30, 32, 34 au S, M, L">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Rangi (Colors)</label>
+            <input type="text" id="edit_color" name="color" class="form-control" placeholder="Mf: Blue, Black, White">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Bei ya Kununulia / Gharama (TZS)</label>
+            <input type="number" id="edit_buy_price" name="buy_price" class="form-control" placeholder="Bei ya kununulia" title="Bei ya Kununulia / Gharama (TZS)" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Bei ya Kuuzia Dukani (TZS)</label>
+            <input type="number" id="edit_sell_price" name="sell_price" class="form-control" placeholder="Bei ya kuuzia" title="Bei ya Kuuzia Dukani (TZS)" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Idadi Iliyopo Stoo (Stock Pcs)</label>
+            <input type="number" id="edit_stock_quantity" name="stock_quantity" class="form-control" placeholder="Idadi iliyopo" title="Idadi Iliyopo Stoo (Stock Pcs)" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Arifa ya Mzigo Kuisha (Min Alert)</label>
+            <input type="number" id="edit_min_stock_alert" name="min_stock_alert" class="form-control" value="3" placeholder="3" title="Arifa ya Mzigo Kuisha">
+          </div>
+        </div>
+
+        <!-- Edit Product Image Upload Component -->
+        <div class="form-group">
+          <label class="form-label"><i class="fa-solid fa-camera"></i> Picha ya Nguo (Badili Picha kutoka PC au Link)</label>
+          <div class="image-upload-zone" id="editProductImageZone" onclick="document.getElementById('editProductImageInput').click()">
+            <input type="file" id="editProductImageInput" name="image" accept="image/*" class="ext-style-95" title="Chagua picha mpya ya nguo kutoka PC" aria-label="Chagua picha mpya ya nguo kutoka PC">
+            <div class="upload-prompt" id="editProductUploadPrompt">
+              <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+              <div class="upload-title">Bofya hapa kuchagua picha mpya kutoka kwenye PC</div>
+              <div class="upload-hint">Itawekwa kwenye mfumo moja kwa moja offline & online</div>
+            </div>
+            <div class="upload-preview-container ext-style-95" id="editProductPreviewContainer">
+              <img id="editProductPreviewImg" src="" alt="Picha ya Nguo" class="upload-preview-img">
+              <div class="preview-details">
+                <span id="editProductFileName" class="preview-filename">picha_iliyopo.jpg</span>
+                <button type="button" class="btn-clear-img" id="btnClearEditProductImg" onclick="event.stopPropagation(); clearEditProductImage();"><i class="fa-solid fa-trash-can"></i> Ondoa</button>
+              </div>
+            </div>
+          </div>
+          <div class="ext-style-102">
+            <span class="ext-style-103"><i class="fa-solid fa-link"></i> Au link ya picha mtandaoni:</span>
+            <input type="text" id="edit_image_url_manual" name="image_url_manual" class="form-control ext-style-104" placeholder="Weka link au uache kama ilivyo">
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" data-close-modal>Ghairi</button>
+          <button type="submit" class="btn-primary ext-style-105">
+            <i class="fa-solid fa-floppy-disk"></i> Hifadhi Mabadiliko ya Bei & Jina
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 3. RESTOCK MODAL (MANUNUZI YA MZIGO MPYA) -->
+  <div class="modal-overlay" id="restockModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title"><i class="fa-solid fa-truck-ramp-box"></i> Ingiza Mzigo Mpya wa Nguo (Restock)</div>
+        <button class="modal-close-btn" data-close-modal title="Funga dirisha" aria-label="Funga dirisha"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form id="restockForm">
+        <div class="form-group">
+          <label class="form-label">Chagua Nguo Iliyopo Stoo</label>
+          <select name="product_id" id="restockProductSelect" class="form-control" title="Chagua Nguo Iliyopo Stoo" aria-label="Chagua Nguo Iliyopo Stoo" required>
+            <!-- JS populated -->
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Idadi ya Nguo Zilizonunuliwa (Pcs)</label>
+            <input type="number" name="quantity" class="form-control" min="1" value="12" placeholder="12" title="Idadi ya Nguo Zilizonunuliwa (Pcs)" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Bei ya Kununulia kwa Kila Pcs (TZS)</label>
+            <input type="number" name="unit_cost" class="form-control" placeholder="Gharama ya kila nguo" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Jina la Muuzaji wa Jumla / Msambazaji Kariakoo</label>
+          <input type="text" name="supplier_name" class="form-control" placeholder="Mf: Duka la Jumla Mtaa wa Kongo">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Maelezo ya Ziada</label>
+          <input type="text" name="notes" class="form-control" placeholder="Maelezo ya mzigo">
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" data-close-modal>Ghairi</button>
+          <button type="submit" class="btn-primary"><i class="fa-solid fa-plus-circle"></i> Ongeza Kwenye Stoo</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 4. INSTALLMENT PAYMENT MODAL -->
+  <div class="modal-overlay" id="installmentModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title" id="installmentModalTitle"><i class="fa-solid fa-money-bill-transfer"></i> Pokea Malipo ya Awamu</div>
+        <button class="modal-close-btn" data-close-modal title="Funga dirisha" aria-label="Funga dirisha"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form id="installmentForm">
+        <input type="hidden" id="instSaleId" name="sale_id">
+        
+        <div class="ext-style-96">
+          <div class="ext-style-97">
+            <span class="ext-style-98">Mteja:</span>
+            <strong id="instCustomerName">-</strong>
+          </div>
+          <div class="ext-style-97">
+            <span class="ext-style-98">Namba ya Risiti:</span>
+            <strong id="instReceiptNo">-</strong>
+          </div>
+          <div class="ext-style-100">
+            <span class="ext-style-98">Baki Inayodaiwa:</span>
+            <strong class="ext-style-106" id="instBalanceDueVal">TZS 0</strong>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Kiasi Anacholipa Sasa (TZS)</label>
+          <input type="number" id="instAmount" name="amount" class="form-control" placeholder="Weka kiasi" title="Kiasi Anacholipa Sasa (TZS)" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Njia ya Malipo</label>
+          <select id="instPaymentType" name="payment_type" class="form-control" title="Njia ya Malipo" aria-label="Njia ya Malipo">
+            <option value="Cash">Pesa Taslimu (Cash)</option>
+            <option value="Tigo Pesa Lipa Namba">Tigo Pesa Lipa Namba</option>
+            <option value="Airtel Money Lipa Namba">Airtel Money Lipa Namba</option>
+            <option value="M-Pesa Lipa Namba">M-Pesa Lipa Namba</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Reference / Muamala wa Simu (Kama kalipa kwa Lipa Namba)</label>
+          <input type="text" id="instRefCode" name="reference_code" class="form-control" placeholder="Msimbo wa sms">
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" data-close-modal>Ghairi</button>
+          <button type="submit" class="btn-primary"><i class="fa-solid fa-check"></i> Rekodi Malipo</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 5. RECEIPT PREVIEW / PRINT MODAL -->
+  <div class="modal-overlay" id="receiptModal">
+    <div class="modal-box ext-style-107">
+      <div class="modal-header">
+        <div class="modal-title"><i class="fa-solid fa-receipt"></i> Risiti ya Mauzo</div>
+        <button class="modal-close-btn" data-close-modal title="Funga dirisha" aria-label="Funga dirisha"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div id="receiptPrintArea">
+        <div class="receipt-wrapper">
+          <div class="receipt-header">
+            <div class="receipt-logo-box">
+              <img src="/assets/logo.png" alt="GLOWNEST Logo" class="receipt-logo-img">
+            </div>
+            <h3 id="recStoreName">GLOWNEST SMART WEAR</h3>
+            <p class="ext-style-108" id="recStoreTagline">Nguo Kali & Mitindo ya Kisasa Kutoka Kariakoo</p>
+            <p class="ext-style-109" id="recStoreOwner">Mmiliki: ABISHAI EVARISTO NGENZI</p>
+            <p class="ext-style-110" id="recStorePhone">Simu: 0656392400 / 0685073565</p>
+            <p class="ext-style-111" id="recStoreLocation">GOLANI KIJIWENI - KIMARA SUKA DSM-TZ</p>
+          </div>
+
+          <div class="receipt-details">
+            <div><strong>Risiti #:</strong> <span id="recReceiptNo">-</span></div>
+            <div><strong>Tarehe:</strong> <span id="recDate">-</span></div>
+            <div><strong>Mteja:</strong> <span id="recCustomer">-</span></div>
+            <div><strong>Njia ya Malipo:</strong> <span id="recPaymentType">-</span></div>
+            <div id="recCashierRow"><strong>Aliyehudumia:</strong> <span id="recCashierName">Staff</span></div>
+            <div id="recRefCodeRow" class="ext-style-2"><strong>Muamala Code:</strong> <span id="recRefCode">-</span></div>
+          </div>
+
+          <table class="receipt-table">
+            <thead>
+              <tr>
+                <th>Aina ya Nguo</th>
+                <th class="ext-style-112">Qty</th>
+                <th class="ext-style-113">Bei</th>
+                <th class="ext-style-113">Jumla</th>
+              </tr>
+            </thead>
+            <tbody id="recItemsBody">
+              <!-- JS items -->
+            </tbody>
+          </table>
+
+          <div class="receipt-total-section">
+            <div class="ext-style-114">
+              <span>Jumla Ndogo:</span>
+              <span id="recSubtotal">TZS 0</span>
+            </div>
+            <div class="ext-style-114">
+              <span>Punguzo:</span>
+              <span id="recDiscount">TZS 0</span>
+            </div>
+            <div class="ext-style-115">
+              <span>Jumla Kamili:</span>
+              <span id="recNetTotal">TZS 0</span>
+            </div>
+            <div class="ext-style-114">
+              <span>Kiasi Kilicholipwa:</span>
+              <span id="recAmountPaid">TZS 0</span>
+            </div>
+            <div class="ext-style-116">
+              <span>Baki:</span>
+              <span id="recBalanceDue">TZS 0</span>
+            </div>
+          </div>
+
+          <div class="receipt-footer">
+            <div class="receipt-lipa-numbers">
+              <strong>LIPA NAMBA:</strong><br>
+              Tigo Pesa: <strong>44834912</strong> (Jina: <strong>ABISHAI</strong>)<br>
+              Airtel Money: <strong>136541343</strong> (Jina: <strong>DORCAS</strong>)
+            </div>
+            <p class="ext-style-102">*** Asante kwa Kuchagua GLOWNEST ***</p>
+            <p>Nguo iliyonunuliwa hairejeshwi pesa, inabadilishwa tu ndani ya siku 2 ikiwa na risiti hii.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions ext-style-117">
+        <button class="btn-secondary" data-close-modal>Funga</button>
+        <button class="btn-whatsapp" id="btnSendWhatsAppReceipt" title="Tuma Risiti hii kwa WhatsApp ya Mteja">
+          <i class="fa-brands fa-whatsapp"></i> Tuma WhatsApp
+        </button>
+        <button class="btn-primary" id="btnPrintReceiptBtn">
+          <i class="fa-solid fa-print"></i> Print Risiti
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. ADD EXPENSE MODAL -->
+  <div class="modal-overlay" id="addExpenseModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title"><i class="fa-solid fa-receipt ext-style-16"></i> Rekodi Matumizi Mapya ya Duka</div>
+        <button class="modal-close-btn" data-close-modal title="Funga dirisha" aria-label="Funga dirisha"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form id="addExpenseForm">
+        <div class="form-group">
+          <label class="form-label">Maelezo ya Matumizi (Title)</label>
+          <input type="text" name="title" class="form-control" placeholder="Mf: Nauli ya kwenda Kariakoo kufuata mzigo" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Kategoria ya Matumizi</label>
+            <select name="category" class="form-control" title="Kategoria ya Matumizi" aria-label="Kategoria ya Matumizi" required>
+              <option value="Nauli/Mzigo Kariakoo">Nauli/Mzigo Kariakoo</option>
+              <option value="Umeme/LUKU">Umeme/LUKU</option>
+              <option value="Vifungashio/Mifuko">Vifungashio/Mifuko (Carrier Bags)</option>
+              <option value="Chakula/Maji">Chakula & Maji ya Dukani</option>
+              <option value="Kodi/Fremu">Kodi ya Fremu</option>
+              <option value="Matangazo">Matangazo & Masoko</option>
+              <option value="Nyinginezo">Nyinginezo</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Njia ya Malipo</label>
+            <select name="payment_type" class="form-control" title="Njia ya Malipo" aria-label="Njia ya Malipo">
+              <option value="Cash (Drooni)">Pesa Taslimu (Cash Drooni)</option>
+              <option value="Tigo Pesa">Tigo Pesa</option>
+              <option value="Airtel Money">Airtel Money</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Kiasi cha Pesa (TZS)</label>
+          <input type="number" name="amount" class="form-control" placeholder="Mf: 5000" min="100" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Maelezo ya Ziada (Hiari)</label>
+          <input type="text" name="notes" class="form-control" placeholder="Maelezo au kumbukumbu yoyote">
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" data-close-modal>Ghairi</button>
+          <button type="submit" class="btn-primary ext-style-74">
+            <i class="fa-solid fa-floppy-disk"></i> Hifadhi Matumizi
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 6.5 ADD CUSTOMER ORDER MODAL -->
+  <div class="modal-overlay" id="addOrderModal">
+    <div class="modal-box ext-style-118">
+      <div class="modal-header">
+        <div class="modal-title ext-style-21"><i class="fa-solid fa-clipboard-list"></i> Weka Oda Mpya ya Nguo ya Mteja</div>
+        <button class="modal-close-btn" data-close-modal title="Funga dirisha" aria-label="Funga dirisha"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form id="addOrderForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-user"></i> Jina Kamili la Mteja</label>
+            <input type="text" name="customer_name" id="order_customer_name" class="form-control" placeholder="Mf: Asha Juma au Juma Bakari" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-phone"></i> Namba ya Simu ya Mteja</label>
+            <input type="tel" name="customer_phone" id="order_customer_phone" class="form-control" placeholder="Mf: 0712345678 au 0685073565" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-shirt"></i> Aina / Jina la Nguo Iliyoagizwa</label>
+            <input type="text" name="clothing_item" id="order_clothing_item" class="form-control" placeholder="Mf: Suti ya Kike ya Ofisini, au Gauni la Harusi" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Kategoria</label>
+            <select name="category" id="order_category" class="form-control" title="Kategoria ya Nguo" aria-label="Kategoria ya Nguo">
+              <option value="Magauni">Magauni</option>
+              <option value="Jeans">Jeans</option>
+              <option value="Mashati">Mashati</option>
+              <option value="Tracksuits">Tracksuits</option>
+              <option value="T-Shirts">T-Shirts</option>
+              <option value="Suruali">Suruali</option>
+              <option value="Watoto">Watoto</option>
+              <option value="Nyinginezo" selected>Nyinginezo</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Saizi (Size)</label>
+            <input type="text" name="size" id="order_size" class="form-control" placeholder="Mf: 32, 34, XL, Free">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Rangi (Color)</label>
+            <input type="text" name="color" id="order_color" class="form-control" placeholder="Mf: Navy Blue, Black, White">
+          </div>
+          <div class="form-group ext-style-119">
+            <label class="form-label">Idadi (Pcs)</label>
+            <input type="number" name="quantity" id="order_quantity" class="form-control" value="1" min="1" placeholder="1" title="Idadi (Pcs)" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label"><i class="fa-regular fa-calendar-check ext-style-21"></i> Tarehe ya Nguo Kufika / Ahadi</label>
+            <input type="date" name="target_date" id="order_target_date" class="form-control" title="Tarehe ya Nguo Kufika au Ahadi" aria-label="Tarehe ya Nguo Kufika au Ahadi" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Bei Iliyokubaliwa (TZS)</label>
+            <input type="number" name="estimated_price" id="order_estimated_price" class="form-control" placeholder="Mf: 65000" min="0" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Kiasi cha Utangulizi (Advance TZS)</label>
+            <input type="number" name="advance_paid" id="order_advance_paid" class="form-control" placeholder="0 kama hajalipa bado" value="0" min="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Njia ya Malipo ya Advance</label>
+            <select name="payment_method" id="order_payment_method" class="form-control" title="Njia ya Malipo ya Advance" aria-label="Njia ya Malipo ya Advance">
+              <option value="Pesa Taslimu (Cash)">Pesa Taslimu (Cash)</option>
+              <option value="Tigo Pesa">Tigo Pesa</option>
+              <option value="Airtel Money">Airtel Money</option>
+              <option value="Lipa Namba">Lipa Namba (M-Pesa/Bank)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- PC Image Upload for Order -->
+        <div class="form-group">
+          <label class="form-label"><i class="fa-solid fa-camera"></i> Picha ya Mfano wa Nguo (Kutoka PC au Link)</label>
+          <div class="image-upload-zone" id="addOrderImageZone" onclick="document.getElementById('addOrderImageInput').click()">
+            <input type="file" id="addOrderImageInput" name="image" accept="image/*" class="ext-style-95" title="Pakia picha ya mfano wa nguo kutoka PC" aria-label="Pakia picha ya mfano wa nguo kutoka PC">
+            <div class="upload-prompt" id="addOrderUploadPrompt">
+              <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+              <div class="upload-title">Bofya hapa kuchagua picha kutoka kwenye PC au buruta faili hapa</div>
+              <div class="upload-hint">Picha itahifadhiwa kwenye mfumo offline & online (JPG, PNG, WEBP)</div>
+            </div>
+            <div class="upload-preview-container ext-style-95" id="addOrderPreviewContainer">
+              <img id="addOrderPreviewImg" src="" alt="Mfano wa Nguo" class="upload-preview-img">
+              <div class="preview-details">
+                <span id="addOrderFileName" class="preview-filename">picha_ya_oda.jpg</span>
+                <button type="button" class="btn-clear-img" id="btnClearAddOrderImg" onclick="event.stopPropagation(); clearAddOrderImage();"><i class="fa-solid fa-trash-can"></i> Ondoa</button>
+              </div>
+            </div>
+          </div>
+          <div class="ext-style-102">
+            <span class="ext-style-103"><i class="fa-solid fa-link"></i> Au link ya picha mtandaoni:</span>
+            <input type="text" id="addOrderImageUrlManual" name="image_url_manual" class="form-control ext-style-104" placeholder="https://mfano.com/picha-ya-mteja.jpg">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Maelezo Maalum / Vipimo vya Mteja</label>
+          <textarea name="notes" id="order_notes" class="form-control" rows="2" placeholder="Mf: Mteja anahitaji rangi ya navy blue safi, kola ya kisasa, au vipimo maalum..."></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" data-close-modal>Ghairi</button>
+          <button type="submit" class="btn-primary ext-style-105">
+            <i class="fa-solid fa-floppy-disk"></i> Hifadhi Oda ya Mteja
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 6.6 EDIT CUSTOMER ORDER MODAL -->
+  <div class="modal-overlay" id="editOrderModal">
+    <div class="modal-box ext-style-118">
+      <div class="modal-header">
+        <div class="modal-title ext-style-21"><i class="fa-solid fa-pen-to-square"></i> Hariri Taarifa za Oda</div>
+        <button class="modal-close-btn" data-close-modal title="Funga dirisha" aria-label="Funga dirisha"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form id="editOrderForm">
+        <input type="hidden" id="edit_order_id" name="id">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Jina la Mteja</label>
+            <input type="text" id="edit_order_customer_name" name="customer_name" class="form-control" placeholder="Jina la Mteja" title="Jina la Mteja" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Namba ya Simu</label>
+            <input type="tel" id="edit_order_customer_phone" name="customer_phone" class="form-control" placeholder="Namba ya Simu" title="Namba ya Simu" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Aina ya Nguo</label>
+            <input type="text" id="edit_order_clothing_item" name="clothing_item" class="form-control" placeholder="Aina ya Nguo" title="Aina ya Nguo" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Kategoria</label>
+            <select id="edit_order_category" name="category" class="form-control" title="Kategoria ya Nguo" aria-label="Kategoria ya Nguo">
+              <option value="Magauni">Magauni</option>
+              <option value="Jeans">Jeans</option>
+              <option value="Mashati">Mashati</option>
+              <option value="Tracksuits">Tracksuits</option>
+              <option value="T-Shirts">T-Shirts</option>
+              <option value="Suruali">Suruali</option>
+              <option value="Watoto">Watoto</option>
+              <option value="Nyinginezo">Nyinginezo</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Saizi</label>
+            <input type="text" id="edit_order_size" name="size" class="form-control" placeholder="Saizi ya Nguo" title="Saizi ya Nguo">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Rangi</label>
+            <input type="text" id="edit_order_color" name="color" class="form-control" placeholder="Rangi ya Nguo" title="Rangi ya Nguo">
+          </div>
+          <div class="form-group ext-style-119">
+            <label class="form-label">Idadi (Pcs)</label>
+            <input type="number" id="edit_order_quantity" name="quantity" class="form-control" min="1" placeholder="1" title="Idadi (Pcs)" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Tarehe ya Ahadi / Kufika</label>
+            <input type="date" id="edit_order_target_date" name="target_date" class="form-control" title="Tarehe ya Ahadi au Kufika" aria-label="Tarehe ya Ahadi au Kufika" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Bei Iliyokubaliwa (TZS)</label>
+            <input type="number" id="edit_order_estimated_price" name="estimated_price" class="form-control" placeholder="Bei Iliyokubaliwa" title="Bei Iliyokubaliwa (TZS)" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Hali ya Oda (Status)</label>
+          <select id="edit_order_status" name="status" class="form-control" title="Hali ya Oda" aria-label="Hali ya Oda">
+            <option value="pending">Inasubiriwa (Pending)</option>
+            <option value="ordered">Imeagizwa Kariakoo/Kiwandani (Ordered)</option>
+            <option value="arrived">Imefika Dukani - Tayari (Arrived)</option>
+            <option value="delivered">Imekabidhiwa kwa Mteja (Delivered)</option>
+            <option value="cancelled">Imeghairiwa (Cancelled)</option>
+          </select>
+        </div>
+
+        <!-- Edit Order Image Upload Component -->
+        <div class="form-group">
+          <label class="form-label"><i class="fa-solid fa-camera"></i> Picha ya Mfano wa Nguo (Badili kutoka PC au Link)</label>
+          <div class="image-upload-zone" id="editOrderImageZone" onclick="document.getElementById('editOrderImageInput').click()">
+            <input type="file" id="editOrderImageInput" name="image" accept="image/*" class="ext-style-95" title="Badili picha ya mfano wa nguo kutoka PC" aria-label="Badili picha ya mfano wa nguo kutoka PC">
+            <div class="upload-prompt" id="editOrderUploadPrompt">
+              <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+              <div class="upload-title">Bofya hapa kuchagua picha mpya kutoka kwenye PC</div>
+              <div class="upload-hint">Itawekwa kwenye oda mara moja</div>
+            </div>
+            <div class="upload-preview-container ext-style-95" id="editOrderPreviewContainer">
+              <img id="editOrderPreviewImg" src="" alt="Mfano wa Nguo" class="upload-preview-img">
+              <div class="preview-details">
+                <span id="editOrderFileName" class="preview-filename">picha_iliyopo.jpg</span>
+                <button type="button" class="btn-clear-img" id="btnClearEditOrderImg" onclick="event.stopPropagation(); clearEditOrderImage();"><i class="fa-solid fa-trash-can"></i> Ondoa</button>
+              </div>
+            </div>
+          </div>
+          <div class="ext-style-102">
+            <span class="ext-style-103"><i class="fa-solid fa-link"></i> Au link ya picha mtandaoni:</span>
+            <input type="text" id="edit_order_image_url_manual" name="image_url_manual" class="form-control ext-style-104" placeholder="Weka link au uache kama ilivyo">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Maelezo ya Oda</label>
+          <textarea id="edit_order_notes" name="notes" class="form-control" rows="2" placeholder="Maelezo ya Oda" title="Maelezo ya Oda"></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" data-close-modal>Ghairi</button>
+          <button type="submit" class="btn-primary ext-style-105">
+            <i class="fa-solid fa-floppy-disk"></i> Hifadhi Mabadiliko
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 6.7 ORDER PAYMENT MODAL (POKEA BAKI / NYONGEZA YA MALIPO) -->
+  <div class="modal-overlay" id="orderPaymentModal">
+    <div class="modal-box ext-style-120">
+      <div class="modal-header">
+        <div class="modal-title ext-style-31">
+          <i class="fa-solid fa-hand-holding-dollar"></i> Pokea Malipo ya Baki ya Oda
+        </div>
+        <button class="modal-close-btn" data-close-modal title="Funga dirisha" aria-label="Funga dirisha"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="order-payment-summary-box ext-style-121">
+        <div class="ext-style-122">
+          <span class="ext-style-123">Oda #:</span>
+          <strong id="payOrderNo" class="ext-style-124">-</strong>
+        </div>
+        <div class="ext-style-122">
+          <span class="ext-style-123">Mteja:</span>
+          <strong id="payOrderCustomer" class="ext-style-125">-</strong>
+        </div>
+        <div class="ext-style-122">
+          <span class="ext-style-123">Nguo Iliyoagizwa:</span>
+          <span id="payOrderItem" class="ext-style-126">-</span>
+        </div>
+        <div class="ext-style-122">
+          <span class="ext-style-123">Bei Kamili:</span>
+          <span id="payOrderTotal" class="ext-style-127">TZS 0</span>
+        </div>
+        <div class="ext-style-122">
+          <span class="ext-style-123">Imelipwa (Advance):</span>
+          <span id="payOrderAdvance" class="ext-style-128">TZS 0</span>
+        </div>
+        <div class="ext-style-129">
+          <span class="ext-style-130">Baki Inayodaiwa:</span>
+          <strong id="payOrderBalance" class="ext-style-131">TZS 0</strong>
+        </div>
+      </div>
+
+      <form id="orderPaymentForm">
+        <input type="hidden" id="pay_order_id">
+
+        <div class="form-group">
+          <label class="form-label">Kiasi Anacholipa Sasa (TZS)</label>
+          <input type="number" id="pay_order_amount" class="form-control ext-style-132" placeholder="Weka kiasi cha fedha" min="100" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Njia ya Malipo</label>
+          <select id="pay_order_method" class="form-control" title="Njia ya Malipo" aria-label="Njia ya Malipo">
+            <option value="Cash">Pesa Taslimu (Cash)</option>
+            <option value="Tigo Pesa">Tigo Pesa</option>
+            <option value="Airtel Money">Airtel Money</option>
+            <option value="Lipa Namba">Lipa Namba (M-Pesa/Bank)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Kumbukumbu ya Muamala / Ref Code (Hiari)</label>
+          <input type="text" id="pay_order_ref" class="form-control" placeholder="Mfano: QP98765...">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Maelezo ya Malipo (Hiari)</label>
+          <input type="text" id="pay_order_notes" class="form-control" placeholder="Mf: Malipo ya kumalizia baki">
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" data-close-modal>Ghairi</button>
+          <button type="submit" class="btn-primary ext-style-133">
+            <i class="fa-solid fa-check"></i> Thibitisha Malipo
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 6.8 ORDER RECEIPT / VOUCHER MODAL (STAKABADHI YA ODA) -->
+  <div class="modal-overlay" id="orderReceiptModal">
+    <div class="modal-box ext-style-107">
+      <div class="modal-header">
+        <div class="modal-title"><i class="fa-solid fa-receipt ext-style-21"></i> Stakabadhi ya Oda ya Nguo</div>
+        <button class="modal-close-btn" data-close-modal title="Funga dirisha" aria-label="Funga dirisha"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="receipt-paper ext-style-134" id="orderReceiptPaper">
+        <div class="ext-style-135">
+          <h2 class="ext-style-136" id="ordRecStoreName">GLOWNEST SMART WEAR</h2>
+          <div class="ext-style-137" id="ordRecStoreLocation">GOLANI KIJIWENI - KIMARA SUKA DSM-TZ</div>
+          <div class="ext-style-137" id="ordRecStorePhone">Simu: 0656392400 / 0685073565</div>
+          <div class="ext-style-138">STAKABADHI YA ODA YA NGUO</div>
+        </div>
+
+        <div class="ext-style-139">
+          <div><strong>Oda #:</strong> <span id="ordRecNumber">-</span></div>
+          <div><strong>Tarehe ya Oda:</strong> <span id="ordRecCreatedDate">-</span></div>
+          <div class="ext-style-140"><strong>Tarehe ya Kufika/Ahadi:</strong> <span id="ordRecTargetDate" class="ext-style-141">-</span></div>
+          <div><strong>Mteja:</strong> <span id="ordRecCustomer">-</span></div>
+          <div><strong>Simu:</strong> <span id="ordRecPhone">-</span></div>
+          <div><strong>Aliyepokea Oda:</strong> <span id="ordRecCashier">Muuzaji</span></div>
+        </div>
+
+        <div class="ext-style-142">
+          <div class="ext-style-143" id="ordRecItemName">Nguo: -</div>
+          <div class="ext-style-144" id="ordRecItemDetails">Saizi: - | Rangi: - | Idadi: 1 pcs</div>
+          <div class="ext-style-144" id="ordRecNotes">Maelezo: -</div>
+        </div>
+
+        <div class="ext-style-145">
+          <div class="ext-style-68">
+            <span>Bei Kamili ya Nguo:</span>
+            <strong id="ordRecTotal">TZS 0</strong>
+          </div>
+          <div class="ext-style-68">
+            <span>Utangulizi Uliolipwa (Advance):</span>
+            <strong id="ordRecPaid" class="ext-style-146">TZS 0</strong>
+          </div>
+          <div class="ext-style-147">
+            <span>Baki Inayodaiwa:</span>
+            <span id="ordRecBalance" class="ext-style-140">TZS 0</span>
+          </div>
+        </div>
+
+        <div class="ext-style-148">
+          <p class="ext-style-149">*** Tafadhali tunza risiti hii wakati wa kuchukua nguo yako! ***</p>
+          <p class="ext-style-150">Asante kwa kuchagua GLOWNEST Smart Wear!</p>
+        </div>
+      </div>
+
+      <div class="form-actions ext-style-117">
+        <button class="btn-secondary" data-close-modal>Funga</button>
+        <button class="btn-whatsapp" id="btnSendWhatsAppOrderSlip" title="Tuma ujumbe wa oda WhatsApp">
+          <i class="fa-brands fa-whatsapp"></i> WhatsApp
+        </button>
+        <button class="btn-primary" id="btnPrintOrderSlipBtn">
+          <i class="fa-solid fa-print"></i> Print Stakabadhi
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6.9 IMAGE LIGHTBOX MODAL (KUTAZAMA PICHA KWA UKUBWA) -->
+  <div class="modal-overlay" id="imageLightboxModal">
+    <div class="modal-box ext-style-151">
+      <div class="modal-header ext-style-152">
+        <div class="modal-title ext-style-153" id="lightboxTitle">Picha ya Nguo</div>
+        <button class="modal-close-btn" data-close-modal title="Funga dirisha" aria-label="Funga dirisha"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="ext-style-154">
+        <img id="lightboxImg" src="" alt="Muonekano wa Nguo" class="ext-style-155">
+      </div>
+      <div class="ext-style-156">
+        <span id="lightboxCaption">GLOWNEST Smart Wear</span>
+        <button class="btn-secondary ext-style-157" data-close-modal>Funga</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Z-REPORT (CASH DRAWER CLOSING) MODAL -->
+  <div class="modal-overlay" id="zReportModal">
+    <div class="modal-box ext-style-158">
+      <div class="modal-header">
+        <div class="modal-title ext-style-21">
+          <i class="fa-solid fa-calculator"></i> Kufunga Hesabu za Siku (Z-Report)
+        </div>
+        <button class="modal-close-btn" data-close-modal title="Funga dirisha" aria-label="Funga dirisha"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <!-- Date selector -->
+      <div class="ext-style-159">
+        <span class="ext-style-160">Tarehe ya Ripoti:</span>
+        <input type="date" id="zReportDateInput" class="form-control ext-style-161" title="Tarehe ya Ripoti" aria-label="Tarehe ya Ripoti">
+      </div>
+
+      <div id="zReportPrintArea">
+        <div class="receipt-wrapper ext-style-162">
+          <div class="receipt-header">
+            <h3 class="ext-style-163" id="zrepStoreName">GLOWNEST SMART WEAR</h3>
+            <p class="ext-style-164">RIPOTI YA KUFUNGA HESABU (DAILY Z-REPORT)</p>
+            <p class="ext-style-165">Golani Kijiweni - Kimara Suka DSM</p>
+            <p class="ext-style-166">Tarehe: <strong id="zrepDate">-</strong></p>
+          </div>
+
+          <!-- Section 1: Cash Drawer Balance (Droo ya Pesa) -->
+          <div class="ext-style-167">
+            <div class="ext-style-168">
+              <span>💵 PESA TASLIMU (CASH DROONI):</span>
+              <strong class="ext-style-169" id="zrepExpectedCash">TZS 0</strong>
+            </div>
+            <div class="ext-style-170">
+              <span>• Mauzo/Marejesho ya Cash:</span>
+              <span id="zrepCashIn">TZS 0</span>
+            </div>
+            <div class="ext-style-171">
+              <span>• Matumizi Yaliyotolewa Drooni:</span>
+              <span id="zrepCashOut">- TZS 0</span>
+            </div>
+          </div>
+
+          <!-- Section 2: Mobile Money Collections -->
+          <div class="ext-style-172">
+            <div class="ext-style-173">📱 LIPA NAMBA ZA SIMU:</div>
+            <div class="ext-style-174">
+              <span>• Tigo Pesa (44834912 - ABISHAI):</span>
+              <strong id="zrepTigoIn">TZS 0</strong>
+            </div>
+            <div class="ext-style-174">
+              <span>• Airtel Money (136541343 - DORCAS):</span>
+              <strong id="zrepAirtelIn">TZS 0</strong>
+            </div>
+            <div class="ext-style-175">
+              <span>• Mitandao Mingine:</span>
+              <strong id="zrepOtherIn">TZS 0</strong>
+            </div>
+          </div>
+
+          <!-- Section 3: Summary Totals -->
+          <table class="receipt-table ext-style-176">
+            <tbody>
+              <tr>
+                <td>Jumla ya Pesa Zilizokusanywa (Collections):</td>
+                <td class="ext-style-177" id="zrepTotalCollected">TZS 0</td>
+              </tr>
+              <tr>
+                <td>Jumla ya Matumizi Yote ya Siku (Expenses):</td>
+                <td class="ext-style-178" id="zrepTotalExpenses">- TZS 0</td>
+              </tr>
+              <tr class="ext-style-179">
+                <td>FAIDA HALISI YA SIKU (NET PROFIT):</td>
+                <td class="ext-style-180" id="zrepNetProfit">TZS 0</td>
+              </tr>
+              <tr>
+                <td>Idadi ya Miamala ya Mauzo:</td>
+                <td class="ext-style-73" id="zrepSalesCount">0</td>
+              </tr>
+              <tr>
+                <td>Jumla ya Nguo Zilizouzwa:</td>
+                <td class="ext-style-73" id="zrepUnitsSold">0 pcs</td>
+              </tr>
+              <tr>
+                <td>Mikopo Iliyotolewa Leo (Inadaiwa):</td>
+                <td class="ext-style-178" id="zrepCreditIssued">TZS 0</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="receipt-footer ext-style-181">
+            <p class="ext-style-182">Kufunga Hesabu kumehakikiwa na mfumo wa GLOWNEST Smart Wear.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions ext-style-117">
+        <button class="btn-secondary" data-close-modal>Funga</button>
+        <button class="btn-whatsapp" id="btnSendZReportWhatsApp" title="Tuma Z-Report kwa WhatsApp ya Mmiliki">
+          <i class="fa-brands fa-whatsapp"></i> Tuma WhatsApp kwa Mmiliki
+        </button>
+        <button class="btn-primary" id="btnPrintZReportBtn">
+          <i class="fa-solid fa-print"></i> Print Z-Report
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. BARCODE & HANGTAG MODAL -->
+  <div class="modal-overlay" id="barcodeModal">
+    <div class="modal-box ext-style-183">
+      <div class="modal-header">
+        <div class="modal-title ext-style-20"><i class="fa-solid fa-barcode"></i> Lebo ya Nguo (Hangtag)</div>
+        <button class="modal-close-btn" data-close-modal title="Funga dirisha" aria-label="Funga dirisha"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div id="barcodePrintArea">
+        <div class="hangtag-card ext-style-184">
+          <div class="ext-style-185">Kariakoo Fashion Select</div>
+          <div class="ext-style-186" id="tagStoreName">GLOWNEST SMART WEAR</div>
+          <div class="ext-style-187" id="tagLocation">Kimara Suka, DSM-TZ</div>
+          
+          <hr class="ext-style-188">
+
+          <div class="ext-style-189" id="tagProductName">Jeans Kali ya Kiume</div>
+          <div class="ext-style-190">
+            <span id="tagSize">Saizi: 32</span> &bull; <span id="tagColor">Blue Fade</span>
+          </div>
+
+          <!-- Barcode SVG Render -->
+          <div class="ext-style-191">
+            <svg id="barcodeSvg" class="ext-style-192"></svg>
+          </div>
+
+          <div class="ext-style-193">BEI RASMI YA KUUZIA</div>
+          <div class="ext-style-194" id="tagPrice">TZS 35,000</div>
+
+          <div class="ext-style-195">
+            Simu: <span id="tagPhone">0656392400</span> &bull; Karibu Tena!
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions ext-style-196">
+        <button class="btn-secondary" data-close-modal>Funga</button>
+        <button class="btn-primary" id="btnPrintBarcodeBtn">
+          <i class="fa-solid fa-print"></i> Print Lebo
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. SIZE & COLOR VARIANTS BREAKDOWN MODAL -->
+  <div class="modal-overlay" id="variantsModal">
+    <div class="modal-box ext-style-197">
+      <div class="modal-header">
+        <div class="modal-title ext-style-21"><i class="fa-solid fa-layer-group"></i> Mgawanyo wa Saizi na Rangi</div>
+        <button class="modal-close-btn" data-close-modal title="Funga dirisha" aria-label="Funga dirisha"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="ext-style-96">
+        <div class="ext-style-198" id="varProdName">-</div>
+        <div class="ext-style-160" id="varProdMeta">-</div>
+      </div>
+
+      <form id="variantsForm">
+        <input type="hidden" id="varProductId">
+        
+        <div class="ext-style-199">
+          <label class="form-label ext-style-150">Orodha ya Saizi, Rangi na Idadi (Pcs):</label>
+          <button type="button" class="btn-secondary ext-style-200" id="btnAddVariantRow">
+            <i class="fa-solid fa-plus"></i> Ongeza Saizi
+          </button>
+        </div>
+
+        <div id="variantRowsContainer" class="ext-style-201">
+          <!-- JS dynamic rows -->
+        </div>
+
+        <div class="ext-style-202">
+          <span>Jumla Kamili ya Nguo Zote:</span>
+          <strong id="varTotalCalculatedStock" class="ext-style-21">0 pcs</strong>
+        </div>
+
+        <div class="form-actions ext-style-203">
+          <button type="button" class="btn-secondary" data-close-modal>Ghairi</button>
+          <button type="submit" class="btn-primary">
+            <i class="fa-solid fa-floppy-disk"></i> Hifadhi Mgawanyo
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 10. WHATSAPP DISPATCH MODAL (DIRISHA LA MUUNGANIKO WA WHATSAPP) -->
+  <div class="modal-overlay" id="whatsappModal">
+    <div class="modal-box ext-style-204">
+      <div class="modal-header">
+        <div class="modal-title ext-style-205">
+          <i class="fa-brands fa-whatsapp fa-lg"></i>
+          <span id="waModalTitle">Tuma Ujumbe kwa WhatsApp</span>
+        </div>
+        <button class="modal-close-btn" data-close-modal title="Funga dirisha" aria-label="Funga dirisha"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="ext-style-206">
+        <!-- Customer & Phone Row -->
+        <div class="ext-style-207">
+          <div class="form-group ext-style-208">
+            <label class="form-label ext-style-209">Mteja</label>
+            <input type="text" id="waCustomerName" class="form-control ext-style-210" readonly placeholder="Jina la Mteja" title="Jina la Mteja">
+          </div>
+          <div class="form-group ext-style-208">
+            <label class="form-label ext-style-211">
+              <span>Namba ya WhatsApp</span>
+              <span id="waPhoneStatus" class="ext-style-212"></span>
+            </label>
+            <div class="ext-style-213">
+              <input type="text" id="waCustomerPhone" class="form-control ext-style-214" placeholder="Mf: 07XXXXXXXX">
+              <button type="button" id="waSavePhoneBtn" class="btn-secondary ext-style-215" title="Hifadhi namba hii kwa mteja huyu">
+                <i class="fa-solid fa-floppy-disk"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Connection Helper Notice -->
+        <div class="ext-style-216">
+          <div class="ext-style-217">
+            <i class="fa-solid fa-bolt"></i> Muunganisho wa Uhakika na Haraka:
+          </div>
+          <span class="ext-style-218">
+            Kwenye kompyuta, bonyeza <strong>WhatsApp Web</strong> ili kuanza mazungumzo moja kwa moja. Kwenye simu au app, bonyeza <strong>WhatsApp (wa.me)</strong>. Unaweza pia <strong>Kunakili Ujumbe</strong> ukitaka kubandika manually.
+          </span>
+        </div>
+
+        <!-- Message Preview & Edit -->
+        <div class="form-group ext-style-208">
+          <div class="ext-style-219">
+            <label class="form-label ext-style-220">Ujumbe Utakaotumwa (Unaweza kuongeza maelezo):</label>
+            <button type="button" id="waCopyMsgBtn" class="btn-secondary ext-style-221">
+              <i class="fa-solid fa-copy"></i> Nakili Ujumbe
+            </button>
+          </div>
+          <textarea id="waMessageText" class="form-control ext-style-222" rows="8" placeholder="Andika au hariri ujumbe wa WhatsApp hapa..." title="Ujumbe wa WhatsApp"></textarea>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="ext-style-223">
+          <button type="button" id="waOpenWebBtn" class="btn-whatsapp ext-style-224">
+            <i class="fa-solid fa-laptop"></i> Fungua WhatsApp Web
+          </button>
+          <button type="button" id="waOpenAppBtn" class="btn-whatsapp ext-style-225">
+            <i class="fa-brands fa-whatsapp"></i> Fungua WhatsApp (wa.me)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 11. LOGIN & SESSION MODAL (DIRISHA LA KUINGIA) -->
+  <div class="login-overlay" id="loginModal">
+    <div class="login-card">
+      <div class="ext-style-226">
+        <div class="ext-style-227">
+          <i class="fa-solid fa-crown ext-style-228"></i>
+        </div>
+      </div>
+      <h2 class="ext-style-229">
+        GLOWNEST <span class="ext-style-21">SMART WEAR</span>
+      </h2>
+      <p class="ext-style-230">
+        Mfumo wa Mauzo na Usimamizi wa Duka (Kariakoo Stock)
+      </p>
+
+      <!-- Quick Role Selection -->
+      <div class="login-profile-select">
+        <button type="button" class="login-profile-btn active cashier-btn" id="loginPickCashier" data-user="muuzaji">
+          <i class="fa-solid fa-user-tag ext-style-231"></i>
+          <span class="ext-style-232">CASHIER</span>
+          <small class="ext-style-233">Mauzo & Risiti</small>
+        </button>
+
+        <button type="button" class="login-profile-btn admin-btn" id="loginPickAdmin" data-user="admin">
+          <i class="fa-solid fa-user-shield ext-style-234"></i>
+          <span class="ext-style-232">MMILIKI / ADMIN</span>
+          <small class="ext-style-233">Faida & Ripoti Zote</small>
+        </button>
+      </div>
+
+      <form id="loginForm">
+        <div class="form-group ext-style-235">
+          <label class="form-label ext-style-236">Username / Jina la Mtumiaji</label>
+          <input type="text" id="loginUsernameInput" class="form-control ext-style-237" value="muuzaji" required placeholder="Username" title="Username / Jina la Mtumiaji">
+        </div>
+
+        <div class="form-group ext-style-238">
+          <label class="form-label ext-style-236">PIN ya Kuingilia (Siri)</label>
+          <div class="ext-style-239">
+            <input type="password" id="loginPinInput" class="form-control ext-style-240" placeholder="Weka PIN yako..." maxlength="10" required>
+            <button type="button" id="btnToggleLoginPin" title="Onyesha au ficha PIN" aria-label="Onyesha au ficha PIN" class="ext-style-241">
+              <i class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Touch / Click PIN Keypad (Convenient for tablets & touch screens) -->
+        <div class="pin-keypad">
+          <button type="button" class="pin-key-btn" data-key="1">1</button>
+          <button type="button" class="pin-key-btn" data-key="2">2</button>
+          <button type="button" class="pin-key-btn" data-key="3">3</button>
+          <button type="button" class="pin-key-btn" data-key="4">4</button>
+          <button type="button" class="pin-key-btn" data-key="5">5</button>
+          <button type="button" class="pin-key-btn" data-key="6">6</button>
+          <button type="button" class="pin-key-btn" data-key="7">7</button>
+          <button type="button" class="pin-key-btn" data-key="8">8</button>
+          <button type="button" class="pin-key-btn" data-key="9">9</button>
+          <button type="button" class="pin-key-btn ext-style-242" data-action="clear">C</button>
+          <button type="button" class="pin-key-btn" data-key="0">0</button>
+          <button type="button" class="pin-key-btn" data-action="backspace" title="Futa tarakimu" aria-label="Futa tarakimu"><i class="fa-solid fa-delete-left ext-style-243"></i></button>
+        </div>
+
+        <button type="submit" class="btn-primary ext-style-244">
+          <i class="fa-solid fa-right-to-bracket"></i> Ingia Kwenye Mfumo
+        </button>
+      </form>
+
+      <div class="ext-style-245">
+        PIN ya kuanzia: Cashier ni <strong>0000</strong> &bull; Mmiliki ni <strong>1234</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- 12. ADD / EDIT USER MODAL (ADMIN ONLY) -->
+  <div class="modal-overlay" id="addUserModal">
+    <div class="modal-box ext-style-120">
+      <div class="modal-header">
+        <div class="modal-title ext-style-246">
+          <i class="fa-solid fa-user-gear"></i>
+          <span id="userModalTitle">Sajili Mfanyakazi Mpya</span>
+        </div>
+        <button class="modal-close-btn" data-close-modal title="Funga dirisha" aria-label="Funga dirisha"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form id="addUserForm" class="ext-style-247">
+        <input type="hidden" id="modalUserId">
+
+        <div class="form-group ext-style-208">
+          <label class="form-label">Jina Kamili la Mfanyakazi *</label>
+          <input type="text" id="modalUserFullName" class="form-control" placeholder="Mf: DORCAS KASIMU" required>
+        </div>
+
+        <div class="form-group ext-style-208">
+          <label class="form-label">Username ya Kuingilia *</label>
+          <input type="text" id="modalUserUsername" class="form-control" placeholder="Mf: dorcas au muuzaji2" required>
+        </div>
+
+        <div class="form-row ext-style-207">
+          <div class="form-group ext-style-208">
+            <label class="form-label">PIN ya Siri (Tarakimu) *</label>
+            <input type="text" id="modalUserPin" class="form-control ext-style-248" placeholder="Mf: 2024" maxlength="10" required>
+          </div>
+          <div class="form-group ext-style-208">
+            <label class="form-label">Cheo / Jukumu *</label>
+            <select id="modalUserRole" class="form-control ext-style-127" title="Cheo au Jukumu" aria-label="Cheo au Jukumu">
+              <option value="cashier">Muuzaji (Cashier)</option>
+              <option value="admin">Admin (Mmiliki)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group ext-style-208">
+          <label class="form-label">Namba ya Simu</label>
+          <input type="text" id="modalUserPhone" class="form-control" placeholder="Mf: 07XXXXXXXX">
+        </div>
+
+        <div class="form-actions ext-style-249">
+          <button type="button" class="btn-secondary" data-close-modal>Ghairi</button>
+          <button type="submit" class="btn-primary">
+            <i class="fa-solid fa-floppy-disk"></i> Hifadhi Mfanyakazi
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Main JavaScript Files -->
+  <script src="/js/app.js"></script>
+</body>
+</html>

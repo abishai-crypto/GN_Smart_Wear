@@ -1,0 +1,19 @@
+{
+  "name": "glownest-smart-wear",
+  "version": "1.0.0",
+  "description": "Mfumo wa Mauzo, Manunuzi, Kuwekeza (Layaway), Mikopo na Ripoti kwa GLOWNEST Smart Wear (GN Smart Wear)",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "node --watch server/server.js"
+  },
+  "keywords": ["pos", "fashion", "glownest", "kariakoo", "layaway", "sales"],
+  "author": "GLOWNEST Smart Wear",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "multer": "^1.4.5-lts.1",
+    "sqlite3": "^5.1.7"
+  }
+}

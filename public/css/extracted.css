@@ -1,0 +1,998 @@
+/* Auto-extracted styles from public/index.html to eliminate inline style warnings */
+
+.ext-style-1 {
+  color: var(--primary);
+}
+
+.ext-style-2 {
+  display:none;
+}
+
+.ext-style-3 {
+  display: flex; align-items: center; gap: 0.65rem;
+}
+
+.ext-style-4 {
+  color: var(--accent-gold); font-size: 1.25rem;
+}
+
+.ext-style-5 {
+  text-align: left;
+}
+
+.ext-style-6 {
+  font-weight: 700; font-size: 0.82rem; line-height: 1.1; max-width: 135px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.ext-style-7 {
+  background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.35); color: #f87171; border-radius: 6px; padding: 3px 8px; font-size: 0.72rem; cursor: pointer; display: flex; align-items: center; gap: 4px; margin-left: 4px;
+}
+
+.ext-style-8 {
+  border-color: var(--accent-gold); color: var(--accent-gold); font-size: 0.8rem; padding: 0.5rem 0.85rem; background: rgba(245, 158, 11, 0.1);
+}
+
+.ext-style-9 {
+  cursor: pointer;
+}
+
+.ext-style-10 {
+  font-size: 0.72rem; display: flex; flex-wrap: wrap; gap: 4px; align-items: center;
+}
+
+.ext-style-11 {
+  width: auto; padding: 0.65rem 1rem;
+}
+
+.ext-style-12 {
+  font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--text-dim);
+}
+
+.ext-style-13 {
+  margin-bottom: 0.35rem;
+}
+
+.ext-style-14 {
+  font-size: 0.75rem; color: var(--text-muted);
+}
+
+.ext-style-15 {
+  font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-top: 2px;
+}
+
+.ext-style-16 {
+  color: var(--accent-rose);
+}
+
+.ext-style-17 {
+  display: flex; gap: 0.5rem; flex-wrap: wrap;
+}
+
+.ext-style-18 {
+  border-color: var(--accent-cyan); color: var(--accent-cyan);
+}
+
+.ext-style-19 {
+  margin-bottom: 1rem;
+}
+
+.ext-style-20 {
+  color: var(--accent-cyan);
+}
+
+.ext-style-21 {
+  color: var(--accent-gold);
+}
+
+.ext-style-22 {
+  flex: 1; min-width: 260px;
+}
+
+.ext-style-23 {
+  display: flex; align-items: center; gap: 6px;
+}
+
+.ext-style-24 {
+  font-size: 0.8rem; color: var(--text-dim); white-space: nowrap;
+}
+
+.ext-style-25 {
+  padding: 6px 10px; font-size: 0.82rem; width: auto;
+}
+
+.ext-style-26 {
+  padding: 6px 10px; font-size: 0.75rem;
+}
+
+.ext-style-27 {
+  color: var(--accent-purple);
+}
+
+.ext-style-28 {
+  max-width: 320px;
+}
+
+.ext-style-29 {
+  display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;
+}
+
+.ext-style-30 {
+  font-size: 0.85rem; color: var(--text-muted);
+}
+
+.ext-style-31 {
+  color: var(--accent-emerald);
+}
+
+.ext-style-32 {
+  padding: 5px 12px; font-size: 0.8rem; border-color: var(--accent-gold); color: var(--accent-gold);
+}
+
+.ext-style-33 {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 1.25rem;
+}
+
+.ext-style-34 {
+  background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 10px; padding: 12px;
+}
+
+.ext-style-35 {
+  font-size: 0.75rem; color: var(--text-muted); font-weight: 600;
+}
+
+.ext-style-36 {
+  font-size: 1.3rem; font-weight: 800; color: #fbbf24; font-family: var(--font-heading);
+}
+
+.ext-style-37 {
+  font-size: 0.72rem; color: var(--text-muted); margin-top: 2px;
+}
+
+.ext-style-38 {
+  background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 10px; padding: 12px;
+}
+
+.ext-style-39 {
+  font-size: 1.3rem; font-weight: 800; color: #34d399; font-family: var(--font-heading);
+}
+
+.ext-style-40 {
+  background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.25); border-radius: 10px; padding: 12px;
+}
+
+.ext-style-41 {
+  font-size: 1.3rem; font-weight: 800; color: #60a5fa; font-family: var(--font-heading);
+}
+
+.ext-style-42 {
+  background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.25); border-radius: 10px; padding: 12px;
+}
+
+.ext-style-43 {
+  font-size: 1.3rem; font-weight: 800; color: #c084fc; font-family: var(--font-heading);
+}
+
+.ext-style-44 {
+  margin-bottom: 1.25rem; padding: 1.1rem 1.35rem;
+}
+
+.ext-style-45 {
+  display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem;
+}
+
+.ext-style-46 {
+  display: flex; align-items: center; gap: 0.85rem;
+}
+
+.ext-style-47 {
+  width: 46px; height: 46px; border-radius: 12px; background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.ext-style-48 {
+  font-size: 1.25rem; font-weight: 800; margin: 0; color: var(--text-main);
+}
+
+.ext-style-49 {
+  font-size: 0.8rem; color: var(--text-muted); margin: 0;
+}
+
+.ext-style-50 {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 0.6rem;
+}
+
+.ext-style-51 {
+  display: flex; align-items: center; gap: 0.5rem; background: var(--bg-surface); padding: 4px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-glass);
+}
+
+.ext-style-52 {
+  font-size: 0.78rem; font-weight: 700; color: var(--text-muted);
+}
+
+.ext-style-53 {
+  padding: 4px 8px; font-size: 0.82rem; width: auto; height: 32px;
+}
+
+.ext-style-54 {
+  padding: 6px 12px; font-size: 0.8rem; font-weight: 700;
+}
+
+.ext-style-55 {
+  padding: 6px 14px; font-size: 0.8rem; display: flex; align-items: center; gap: 6px; font-weight: 700;
+}
+
+.ext-style-56 {
+  margin-bottom: 1.25rem;
+}
+
+.ext-style-57 {
+  border-width: 2px;
+}
+
+.ext-style-58 {
+  font-weight: 800;
+}
+
+.ext-style-59 {
+  font-size: 1.85rem; color: var(--accent-emerald);
+}
+
+.ext-style-60 {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;
+}
+
+.ext-style-61 {
+  padding: 1.15rem;
+}
+
+.ext-style-62 {
+  font-weight: 700; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 6px;
+}
+
+.ext-style-63 {
+  display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem;
+}
+
+.ext-style-64 {
+  display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border-glass); padding-bottom: 4px;
+}
+
+.ext-style-65 {
+  color: #10b981;
+}
+
+.ext-style-66 {
+  color: #06b6d4;
+}
+
+.ext-style-67 {
+  color: #f43f5e;
+}
+
+.ext-style-68 {
+  display: flex; justify-content: space-between;
+}
+
+.ext-style-69 {
+  display: flex; justify-content: space-between; padding-top: 2px;
+}
+
+.ext-style-70 {
+  font-weight: 700;
+}
+
+.ext-style-71 {
+  color: var(--accent-gold); font-size: 1.1rem;
+}
+
+.ext-style-72 {
+  padding-left: 2.2rem;
+}
+
+.ext-style-73 {
+  text-align: right;
+}
+
+.ext-style-74 {
+  background: linear-gradient(135deg, #f43f5e 0%, #be123c 100%);
+}
+
+.ext-style-75 {
+  margin-bottom: 1rem; display: flex; gap: 0.75rem; flex-wrap: wrap;
+}
+
+.ext-style-76 {
+  max-width: 220px;
+}
+
+.ext-style-77 {
+  padding: 0.65rem 1rem;
+}
+
+.ext-style-78 {
+  margin-bottom: 1.5rem;
+}
+
+.ext-style-79 {
+  display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;
+}
+
+.ext-style-80 {
+  font-size: 0.8rem; padding: 0.45rem 0.85rem;
+}
+
+.ext-style-81 {
+  max-width: 280px;
+}
+
+.ext-style-82 {
+  padding: 0.45rem 0.75rem;
+}
+
+.ext-style-83 {
+  max-width: 960px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem;
+}
+
+.ext-style-84 {
+  color: var(--accent-cyan); font-size: 1.1rem;
+}
+
+.ext-style-85 {
+  border-top: 2px solid var(--accent-gold);
+}
+
+.ext-style-86 {
+  padding: 6px 14px; font-size: 0.8rem;
+}
+
+.ext-style-87 {
+  padding-top: 0.5rem;
+}
+
+.ext-style-88 {
+  font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.45;
+}
+
+.ext-style-89 {
+  border-top: 2px solid var(--accent-cyan);
+}
+
+.ext-style-90 {
+  padding: 1rem 0;
+}
+
+.ext-style-91 {
+  font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem; line-height: 1.5;
+}
+
+.ext-style-92 {
+  display: flex; gap: 1rem; flex-wrap: wrap;
+}
+
+.ext-style-93 {
+  text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;
+}
+
+.ext-style-94 {
+  border-color: var(--accent-gold); color: var(--accent-gold);
+}
+
+.ext-style-95 {
+  display: none;
+}
+
+.ext-style-96 {
+  background: rgba(0,0,0,0.3); border-radius: 8px; padding: 12px; margin-bottom: 12px;
+}
+
+.ext-style-97 {
+  display:flex; justify-content:space-between; margin-bottom:4px;
+}
+
+.ext-style-98 {
+  color:var(--text-muted);
+}
+
+.ext-style-99 {
+  color:var(--accent-gold); font-size:1.1rem;
+}
+
+.ext-style-100 {
+  display:flex; justify-content:space-between;
+}
+
+.ext-style-101 {
+  margin-top: 0.75rem;
+}
+
+.ext-style-102 {
+  margin-top: 6px;
+}
+
+.ext-style-103 {
+  font-size: 0.75rem; color: var(--text-dim);
+}
+
+.ext-style-104 {
+  margin-top: 3px;
+}
+
+.ext-style-105 {
+  background: linear-gradient(135deg, var(--accent-gold) 0%, #d97706 100%); color: #000; font-weight: 700;
+}
+
+.ext-style-106 {
+  color:var(--accent-rose); font-size:1.1rem;
+}
+
+.ext-style-107 {
+  max-width: 440px;
+}
+
+.ext-style-108 {
+  font-size: 0.73rem; margin: 2px 0; color: #555;
+}
+
+.ext-style-109 {
+  font-size: 0.75rem; margin: 2px 0; font-weight: 600;
+}
+
+.ext-style-110 {
+  font-size: 0.75rem; margin: 2px 0;
+}
+
+.ext-style-111 {
+  font-size: 0.73rem; color: #222; font-weight: 700; margin-top: 3px;
+}
+
+.ext-style-112 {
+  text-align:center;
+}
+
+.ext-style-113 {
+  text-align:right;
+}
+
+.ext-style-114 {
+  display:flex; justify-content:space-between; margin-bottom: 2px;
+}
+
+.ext-style-115 {
+  display:flex; justify-content:space-between; font-weight: bold; font-size: 0.95rem; margin: 4px 0;
+}
+
+.ext-style-116 {
+  display:flex; justify-content:space-between; font-weight: bold;
+}
+
+.ext-style-117 {
+  margin-top: 1rem; display: flex; gap: 0.5rem; justify-content: flex-end; flex-wrap: wrap;
+}
+
+.ext-style-118 {
+  max-width: 620px;
+}
+
+.ext-style-119 {
+  max-width: 110px;
+}
+
+.ext-style-120 {
+  max-width: 460px;
+}
+
+.ext-style-121 {
+  background: rgba(0,0,0,0.35); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; margin-bottom: 1rem;
+}
+
+.ext-style-122 {
+  display: flex; justify-content: space-between; margin-bottom: 4px;
+}
+
+.ext-style-123 {
+  color: var(--text-dim); font-size: 0.8rem;
+}
+
+.ext-style-124 {
+  color: var(--accent-gold); font-size: 0.85rem;
+}
+
+.ext-style-125 {
+  font-size: 0.85rem;
+}
+
+.ext-style-126 {
+  font-size: 0.85rem; font-weight: 600;
+}
+
+.ext-style-127 {
+  font-weight: 600;
+}
+
+.ext-style-128 {
+  color: var(--accent-emerald); font-weight: 600;
+}
+
+.ext-style-129 {
+  display: flex; justify-content: space-between; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 6px; margin-top: 4px;
+}
+
+.ext-style-130 {
+  color: var(--text-dim); font-size: 0.85rem; font-weight: 600;
+}
+
+.ext-style-131 {
+  color: var(--accent-rose); font-size: 1.05rem;
+}
+
+.ext-style-132 {
+  font-size: 1.1rem; font-weight: 700; color: var(--accent-gold);
+}
+
+.ext-style-133 {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.ext-style-134 {
+  background: #fff; color: #111; padding: 18px; border-radius: 6px; font-family: 'Courier New', Courier, monospace; font-size: 0.85rem; line-height: 1.4;
+}
+
+.ext-style-135 {
+  text-align: center; border-bottom: 1px dashed #000; padding-bottom: 8px; margin-bottom: 10px;
+}
+
+.ext-style-136 {
+  margin: 0; font-size: 1.15rem; font-weight: 800; color: #000;
+}
+
+.ext-style-137 {
+  font-size: 0.72rem;
+}
+
+.ext-style-138 {
+  margin-top: 4px; font-weight: bold; background: #eee; padding: 2px 4px; display: inline-block;
+}
+
+.ext-style-139 {
+  margin-bottom: 8px; font-size: 0.8rem;
+}
+
+.ext-style-140 {
+  color: #b91c1c;
+}
+
+.ext-style-141 {
+  font-weight: bold;
+}
+
+.ext-style-142 {
+  border-top: 1px dashed #000; border-bottom: 1px dashed #000; padding: 6px 0; margin-bottom: 8px;
+}
+
+.ext-style-143 {
+  font-weight: bold; margin-bottom: 2px;
+}
+
+.ext-style-144 {
+  font-size: 0.75rem; color: #444;
+}
+
+.ext-style-145 {
+  margin-bottom: 10px;
+}
+
+.ext-style-146 {
+  color: #047857;
+}
+
+.ext-style-147 {
+  display: flex; justify-content: space-between; font-size: 0.95rem; font-weight: bold; border-top: 1px solid #000; margin-top: 4px; padding-top: 4px;
+}
+
+.ext-style-148 {
+  text-align: center; border-top: 1px dashed #000; padding-top: 8px; font-size: 0.7rem; color: #333;
+}
+
+.ext-style-149 {
+  margin: 0 0 4px 0;
+}
+
+.ext-style-150 {
+  margin: 0;
+}
+
+.ext-style-151 {
+  max-width: 520px; background: rgba(15, 23, 42, 0.95); text-align: center;
+}
+
+.ext-style-152 {
+  border-bottom: none; padding-bottom: 0;
+}
+
+.ext-style-153 {
+  font-size: 0.9rem; color: var(--accent-gold); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.ext-style-154 {
+  padding: 10px 0;
+}
+
+.ext-style-155 {
+  max-width: 100%; max-height: 480px; object-fit: contain; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+}
+
+.ext-style-156 {
+  display: flex; justify-content: space-between; align-items: center; padding-top: 6px; font-size: 0.78rem; color: var(--text-dim);
+}
+
+.ext-style-157 {
+  padding: 4px 12px; font-size: 0.75rem;
+}
+
+.ext-style-158 {
+  max-width: 480px;
+}
+
+.ext-style-159 {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 8px;
+}
+
+.ext-style-160 {
+  font-size: 0.8rem; color: var(--text-muted);
+}
+
+.ext-style-161 {
+  width: auto; padding: 4px 8px; font-size: 0.8rem;
+}
+
+.ext-style-162 {
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.ext-style-163 {
+  color: #000;
+}
+
+.ext-style-164 {
+  font-size: 0.75rem; font-weight: 700; margin: 2px 0; color: #333;
+}
+
+.ext-style-165 {
+  font-size: 0.72rem; margin: 2px 0; color: #555;
+}
+
+.ext-style-166 {
+  font-size: 0.72rem; margin: 2px 0; color: #222;
+}
+
+.ext-style-167 {
+  background: #fef3c7; border: 1px solid #f59e0b; border-radius: 6px; padding: 8px; margin: 8px 0; font-size: 0.8rem;
+}
+
+.ext-style-168 {
+  font-weight: 800; color: #92400e; margin-bottom: 4px; display: flex; justify-content: space-between;
+}
+
+.ext-style-169 {
+  font-size: 0.95rem;
+}
+
+.ext-style-170 {
+  display: flex; justify-content: space-between; font-size: 0.73rem; color: #451a03;
+}
+
+.ext-style-171 {
+  display: flex; justify-content: space-between; font-size: 0.73rem; color: #b91c1c;
+}
+
+.ext-style-172 {
+  background: #f4f4f5; border-radius: 6px; padding: 8px; margin-bottom: 8px; font-size: 0.78rem;
+}
+
+.ext-style-173 {
+  font-weight: 700; margin-bottom: 4px; color: #222;
+}
+
+.ext-style-174 {
+  display: flex; justify-content: space-between; margin-bottom: 2px; color: #333;
+}
+
+.ext-style-175 {
+  display: flex; justify-content: space-between; color: #333;
+}
+
+.ext-style-176 {
+  margin-top: 4px;
+}
+
+.ext-style-177 {
+  text-align: right; font-weight: bold;
+}
+
+.ext-style-178 {
+  text-align: right; color: #b91c1c;
+}
+
+.ext-style-179 {
+  border-top: 1px solid #ddd; font-weight: bold; font-size: 0.85rem;
+}
+
+.ext-style-180 {
+  text-align: right; color: #047857;
+}
+
+.ext-style-181 {
+  margin-top: 8px;
+}
+
+.ext-style-182 {
+  font-size: 0.7rem; color: #555;
+}
+
+.ext-style-183 {
+  max-width: 380px;
+}
+
+.ext-style-184 {
+  background: #ffffff; color: #000000; border: 2px dashed #333; border-radius: 8px; padding: 16px; text-align: center; margin: 0 auto; max-width: 300px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.ext-style-185 {
+  font-size: 0.65rem; font-weight: 800; letter-spacing: 1.5px; color: #555; text-transform: uppercase;
+}
+
+.ext-style-186 {
+  font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; color: #000; margin: 2px 0;
+}
+
+.ext-style-187 {
+  font-size: 0.7rem; color: #666; margin-bottom: 8px;
+}
+
+.ext-style-188 {
+  border: 0; border-top: 1px solid #ddd; margin: 6px 0;
+}
+
+.ext-style-189 {
+  font-size: 0.85rem; font-weight: 700; color: #111; margin-top: 4px;
+}
+
+.ext-style-190 {
+  font-size: 0.75rem; color: #555; margin-bottom: 6px;
+}
+
+.ext-style-191 {
+  margin: 8px 0; background: #fff; display: flex; justify-content: center;
+}
+
+.ext-style-192 {
+  max-width: 100%;
+}
+
+.ext-style-193 {
+  font-size: 0.72rem; color: #444; font-weight: 600; margin-bottom: 2px;
+}
+
+.ext-style-194 {
+  font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: #b91c1c;
+}
+
+.ext-style-195 {
+  font-size: 0.62rem; color: #777; margin-top: 8px; border-top: 1px dashed #ccc; padding-top: 4px;
+}
+
+.ext-style-196 {
+  margin-top: 1.25rem; display: flex; gap: 0.5rem; justify-content: flex-end;
+}
+
+.ext-style-197 {
+  max-width: 520px;
+}
+
+.ext-style-198 {
+  font-weight: 700; color: #fff;
+}
+
+.ext-style-199 {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;
+}
+
+.ext-style-200 {
+  padding: 3px 8px; font-size: 0.75rem; border-color: var(--primary); color: var(--accent-gold);
+}
+
+.ext-style-201 {
+  display: flex; flex-direction: column; gap: 8px; max-height: 260px; overflow-y: auto; padding-right: 4px;
+}
+
+.ext-style-202 {
+  margin-top: 12px; padding: 8px 12px; background: rgba(245, 158, 11, 0.1); border-radius: 6px; display: flex; justify-content: space-between; font-size: 0.85rem;
+}
+
+.ext-style-203 {
+  margin-top: 1rem;
+}
+
+.ext-style-204 {
+  max-width: 540px;
+}
+
+.ext-style-205 {
+  color: #25D366; display: flex; align-items: center; gap: 8px;
+}
+
+.ext-style-206 {
+  display: flex; flex-direction: column; gap: 12px; margin-top: 8px;
+}
+
+.ext-style-207 {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+
+.ext-style-208 {
+  margin-bottom: 0;
+}
+
+.ext-style-209 {
+  font-size: 0.8rem;
+}
+
+.ext-style-210 {
+  background: rgba(255,255,255,0.06); font-weight: 600;
+}
+
+.ext-style-211 {
+  font-size: 0.8rem; display: flex; justify-content: space-between;
+}
+
+.ext-style-212 {
+  font-size: 0.72rem; color: var(--accent-gold);
+}
+
+.ext-style-213 {
+  display: flex; gap: 6px;
+}
+
+.ext-style-214 {
+  font-weight: 700; color: #4ade80;
+}
+
+.ext-style-215 {
+  padding: 6px 10px; font-size: 0.8rem; border-color: rgba(255,255,255,0.2);
+}
+
+.ext-style-216 {
+  background: rgba(37, 211, 102, 0.1); border: 1px solid rgba(37, 211, 102, 0.25); border-radius: 8px; padding: 10px 12px; font-size: 0.8rem; line-height: 1.45;
+}
+
+.ext-style-217 {
+  display: flex; align-items: center; gap: 6px; font-weight: 700; color: #25D366; margin-bottom: 2px;
+}
+
+.ext-style-218 {
+  color: var(--text-muted);
+}
+
+.ext-style-219 {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;
+}
+
+.ext-style-220 {
+  margin: 0; font-size: 0.8rem;
+}
+
+.ext-style-221 {
+  padding: 2px 8px; font-size: 0.72rem; border-color: var(--accent-gold); color: var(--accent-gold);
+}
+
+.ext-style-222 {
+  font-family: inherit; font-size: 0.82rem; line-height: 1.45; resize: vertical;
+}
+
+.ext-style-223 {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px;
+}
+
+.ext-style-224 {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%); justify-content: center; padding: 10px; font-size: 0.85rem;
+}
+
+.ext-style-225 {
+  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); justify-content: center; padding: 10px; font-size: 0.85rem;
+}
+
+.ext-style-226 {
+  display: flex; justify-content: center; margin-bottom: 0.75rem;
+}
+
+.ext-style-227 {
+  width: 54px; height: 54px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b, #d97706); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+}
+
+.ext-style-228 {
+  font-size: 1.5rem; color: #fff;
+}
+
+.ext-style-229 {
+  font-family: var(--font-heading); font-size: 1.4rem; font-weight: 800; color: #fff; margin-bottom: 2px;
+}
+
+.ext-style-230 {
+  font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;
+}
+
+.ext-style-231 {
+  font-size: 1.5rem; color: #34d399;
+}
+
+.ext-style-232 {
+  font-weight: 700; font-size: 0.85rem;
+}
+
+.ext-style-233 {
+  font-size: 0.68rem; color: var(--text-muted);
+}
+
+.ext-style-234 {
+  font-size: 1.5rem; color: #fbbf24;
+}
+
+.ext-style-235 {
+  text-align: left; margin-bottom: 0.75rem;
+}
+
+.ext-style-236 {
+  font-size: 0.78rem;
+}
+
+.ext-style-237 {
+  font-weight: 600; text-align: center; font-size: 0.95rem;
+}
+
+.ext-style-238 {
+  text-align: left; margin-bottom: 1rem;
+}
+
+.ext-style-239 {
+  position: relative;
+}
+
+.ext-style-240 {
+  font-size: 1.25rem; letter-spacing: 4px; text-align: center; font-weight: 800; padding-right: 40px;
+}
+
+.ext-style-241 {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer;
+}
+
+.ext-style-242 {
+  font-size: 0.8rem; color: #f87171;
+}
+
+.ext-style-243 {
+  font-size: 0.9rem;
+}
+
+.ext-style-244 {
+  width: 100%; margin-top: 1rem; padding: 0.85rem; font-size: 1rem; justify-content: center; font-weight: 700;
+}
+
+.ext-style-245 {
+  margin-top: 1rem; font-size: 0.72rem; color: var(--text-dim);
+}
+
+.ext-style-246 {
+  color: var(--accent-gold); display: flex; align-items: center; gap: 8px;
+}
+
+.ext-style-247 {
+  display: flex; flex-direction: column; gap: 12px; margin-top: 10px;
+}
+
+.ext-style-248 {
+  font-weight: 700; letter-spacing: 1px;
+}
+
+.ext-style-249 {
+  margin-top: 10px;
+}
+
